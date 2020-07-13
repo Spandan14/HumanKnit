@@ -2,5 +2,6 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 
 void main() {
+  print("Hello World");
   runApp(LoginScreen());
 }
