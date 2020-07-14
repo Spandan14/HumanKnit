@@ -3,5 +3,5 @@ import 'login.dart';
 
 void main() {
   print("Hello World");
-  runApp(LoginScreen());
+  runApp(MaterialApp(home: LoginScreen()));
 }
