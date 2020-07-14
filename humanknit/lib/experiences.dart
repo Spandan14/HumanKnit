@@ -15,20 +15,26 @@ class ExperiencesPage extends StatelessWidget {
       ),
     );
 
-    final volunteeringButton = makeButton("Volunteering", "Lend a helping hand", screenHeight);
-    final votingButton = makeButton("Voting", "Make your voice heard", screenHeight);
-    final communityButton = makeButton("Community Events", "Enjoy the fun!", screenHeight);
+    final volunteeringButton =
+        makeButton("Volunteering", "Lend a helping hand", screenHeight);
+    final votingButton =
+        makeButton("Voting", "Make your voice heard", screenHeight);
+    final communityButton =
+        makeButton("Community Events", "Enjoy the fun!", screenHeight);
 
     return MaterialApp(
+      theme: ThemeData(fontFamily: 'BungeeInline'),
       home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            pageTitle,
-            dropShadowContainer(volunteeringButton),
-            dropShadowContainer(votingButton),
-            dropShadowContainer(communityButton),
-          ],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              pageTitle,
+              dropShadowContainer(volunteeringButton),
+              dropShadowContainer(votingButton),
+              dropShadowContainer(communityButton),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: 0,
@@ -103,6 +109,9 @@ class ExperiencesPage extends StatelessWidget {
               fontSize: 30 / 896 * screenHeight,
               color: Color(0xfff25740),
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
           Text(
             description,

@@ -4,5 +4,9 @@ import 'experiences.dart';
 
 void main() {
   print("Hello World");
-  runApp(MaterialApp(home: ExperiencesPage()));
+  runApp(
+    MaterialApp(
+      home: ExperiencesPage(),
+    ),
+  );
 }
