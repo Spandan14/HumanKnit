@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/signup.dart';
 import 'nav.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -85,6 +86,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width, right: 0.15 * width, top: 4),
                   child: TextFormField(
+                    obscureText: true,
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Please enter a password";
@@ -178,7 +180,12 @@ class _LoginFormState extends State<LoginForm> {
                             borderRadius: BorderRadius.circular(100),
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(108, 123, 255, 1),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignupScreen()),
+                          );
+                        },
                         child: Text('Sign up',
                             style: TextStyle(color: Colors.white)),
                       ))))
