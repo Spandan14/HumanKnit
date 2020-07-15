@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/login.dart';
 
 class LaunchScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
@@ -62,7 +63,12 @@ class LaunchScreenState extends State<LaunchScreen>
     final getStartedButton = FlatButton(
       color: Color(0xff6c7bff),
       padding: EdgeInsets.all(20),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      },
       child: Text("Get started",
           style: TextStyle(
               fontSize: 24 / 896 * screenHeight, color: Color(0xffffffff))),

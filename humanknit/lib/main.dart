@@ -8,7 +8,7 @@ import 'nav.dart';
 void main() {
   runApp(
     MaterialApp(
-      home: SignupScreen(),
+      home: LaunchScreen(),
     ),
   );
 }
