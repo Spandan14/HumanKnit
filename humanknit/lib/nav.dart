@@ -13,22 +13,43 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> {
   var selectedIndex = 0;
+  PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final iconSize = 30 / 896 * screenHeight;
     final List<Widget> children = [
-      ProfilePage(),
-      FriendsPage(),
-      ExperiencesPage(),
-      SettingsPage(),
+      Padding(padding: EdgeInsets.all(10), child: ProfilePage()),
+      Padding(padding: EdgeInsets.all(10), child: FriendsPage()),
+      Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
+      Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
 
     return MaterialApp(
       theme: ThemeData(fontFamily: 'BungeeInline'),
       home: Scaffold(
-        body: children[selectedIndex],
+        body: SizedBox.expand(
+          child: PageView(
+            controller: pageController,
+            onPageChanged: (index) {
+              setState(() => selectedIndex = index);
+            },
+            children: children,
+          ),
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedIndex,
           type: BottomNavigationBarType.fixed,
@@ -68,14 +89,16 @@ class _NavigationState extends State<Navigation> {
             ),
           ],
         ),
-    ),
+      ),
     );
   }
 
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
+
+      pageController.animateToPage(index,
+          duration: Duration(milliseconds: 500), curve: Curves.easeOut);
     });
   }
-  
 }
