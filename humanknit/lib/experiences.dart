@@ -4,7 +4,6 @@ class ExperiencesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final iconSize = 30 / 896 * screenHeight;
 
     final pageTitle = Text(
       "Events & Experiences",
@@ -22,10 +21,7 @@ class ExperiencesPage extends StatelessWidget {
     final communityButton =
         makeButton("Community Events", "Enjoy the fun!", screenHeight);
 
-    return MaterialApp(
-      theme: ThemeData(fontFamily: 'BungeeInline'),
-      home: Scaffold(
-        body: Center(
+    return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -35,46 +31,7 @@ class ExperiencesPage extends StatelessWidget {
               dropShadowContainer(communityButton),
             ],
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          backgroundColor: Color(0xffffb86f),
-          items: [
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                new AssetImage("assets/images/profile.png"),
-                size: iconSize,
-              ),
-              title: Text(""),
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                new AssetImage("assets/images/friends.png"),
-                size: iconSize,
-              ),
-              title: Text(""),
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                new AssetImage("assets/images/experiences.png"),
-                size: iconSize,
-              ),
-              title: Text(""),
-            ),
-            BottomNavigationBarItem(
-              icon: ImageIcon(
-                new AssetImage("assets/images/settings.png"),
-                size: iconSize,
-              ),
-              title: Text(""),
-            ),
-          ],
-        ),
-      ),
-    );
+        );
   }
 
   Container dropShadowContainer(Widget child) {
