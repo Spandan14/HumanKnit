@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'nav.dart';
 
 class LoginScreen extends StatelessWidget {
   final logoImage = new Image.asset('assets/images/logo.png');
@@ -126,7 +127,10 @@ class _LoginFormState extends State<LoginForm> {
                         color: Color.fromRGBO(252, 186, 3, 1),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            // put stuff in here for when form is submitted
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Navigation()),
+                            );
                           }
                         },
                         child: Text('Login',
