@@ -115,19 +115,20 @@ class ProfilePageState extends State<ProfilePage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         new Flexible(
-          flex: 2,
+          fit: FlexFit.tight,
+          flex: 1,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               nameText,
-              SizedBox(height: 20),
               statsEventsToggle,
-              SizedBox(height: 20),
               timeToggle,
             ],
           ),
         ),
         new Flexible(
-          flex: 1,
+          fit: FlexFit.tight,
+          flex: 2,
           child: children[selectedIndex],
         ),
       ],
