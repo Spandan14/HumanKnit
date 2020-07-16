@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/forgotpassword.dart';
 import 'package:humanknit/signup.dart';
 import 'nav.dart';
 
@@ -131,7 +132,8 @@ class _LoginFormState extends State<LoginForm> {
                           if (_formKey.currentState.validate()) {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => Navigation()),
+                              MaterialPageRoute(
+                                  builder: (context) => Navigation()),
                             );
                           }
                         },
@@ -152,7 +154,13 @@ class _LoginFormState extends State<LoginForm> {
                             borderRadius: BorderRadius.circular(100),
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(108, 123, 255, 0.5),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPasswordScreen()),
+                          );
+                        },
                         child: Text('Forgot Password?',
                             style: TextStyle(color: Colors.white)),
                       )))),
@@ -183,7 +191,8 @@ class _LoginFormState extends State<LoginForm> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SignupScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => SignupScreen()),
                           );
                         },
                         child: Text('Sign up',

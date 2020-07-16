@@ -22,16 +22,16 @@ class ExperiencesPage extends StatelessWidget {
         makeButton("Community Events", "Enjoy the fun!", screenHeight);
 
     return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              pageTitle,
-              dropShadowContainer(volunteeringButton),
-              dropShadowContainer(votingButton),
-              dropShadowContainer(communityButton),
-            ],
-          ),
-        );
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          pageTitle,
+          dropShadowContainer(volunteeringButton),
+          dropShadowContainer(votingButton),
+          dropShadowContainer(communityButton),
+        ],
+      ),
+    );
   }
 
   Container dropShadowContainer(Widget child) {
