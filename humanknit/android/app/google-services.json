@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "258253608792",
+    "firebase_url": "https://humanknit.firebaseio.com",
+    "project_id": "humanknit",
+    "storage_bucket": "humanknit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258253608792:android:f384cfe07770d04b55f72d",
+        "android_client_info": {
+          "package_name": "com.example.humanknit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258253608792-qm6r5epvhov9t843ig56eb8sb0fert8a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbshsrH6pLngjNS1GYrhSNZ1pZRK3Z2-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258253608792-qm6r5epvhov9t843ig56eb8sb0fert8a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
