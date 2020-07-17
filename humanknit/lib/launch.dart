@@ -73,7 +73,7 @@ class LaunchScreenState extends State<LaunchScreen>
           style: TextStyle(
               fontSize: 24 / 896 * screenHeight, color: Color(0xffffffff))),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
+        borderRadius: BorderRadius.circular(1000),
       ),
     );
 
@@ -101,7 +101,7 @@ class LaunchScreenState extends State<LaunchScreen>
                 position: offsetAnimationButton,
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(1000),
                     boxShadow: [
                       BoxShadow(
                         color: Color(0xff000000),
