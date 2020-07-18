@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humanknit/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupScreen extends StatelessWidget {
   @override
@@ -38,6 +40,8 @@ class _SignupFormState extends State<SignupForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _username = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -54,6 +58,7 @@ class _SignupFormState extends State<SignupForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width, right: 0.15 * width, top: 0),
                   child: TextFormField(
+                    controller: _email,
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Please enter an email";
@@ -85,6 +90,7 @@ class _SignupFormState extends State<SignupForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width, right: 0.15 * width, top: 4),
                   child: TextFormField(
+                    controller: _username,
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Please enter a username";
@@ -196,6 +202,11 @@ class _SignupFormState extends State<SignupForm> {
                         color: Color.fromRGBO(252, 186, 3, 1),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
+                            FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _pass.text).then((authResult) => Firestore.instance.collection("users").document(authResult.user.uid).setData({
+                              "uid": authResult.user.uid,
+                              "name": _username.text,
+                              "email": _email.text,
+                            })).catchError((err) => print(err));
                             Navigator.push(
                               context,
                               MaterialPageRoute(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:humanknit/forgotpassword.dart';
 import 'package:humanknit/signup.dart';
 import 'nav.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatelessWidget {
   final logoImage = new Image.asset('assets/images/logo.png');
