@@ -3,6 +3,7 @@ import 'package:humanknit/forgotpassword.dart';
 import 'package:humanknit/signup.dart';
 import 'nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatelessWidget {
   final logoImage = new Image.asset('assets/images/logo.png');
@@ -41,6 +42,8 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
 
+  final TextEditingController _pass = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -57,6 +60,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width, right: 0.15 * width, top: 0),
                   child: TextFormField(
+                    controller: _email,
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Please enter an email";
@@ -88,6 +92,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width, right: 0.15 * width, top: 4),
                   child: TextFormField(
+                    controller: _pass,
                     obscureText: true,
                     validator: (value) {
                       if (value.isEmpty) {
@@ -131,11 +136,12 @@ class _LoginFormState extends State<LoginForm> {
                         color: Color.fromRGBO(252, 186, 3, 1),
                         onPressed: () {
                           if (_formKey.currentState.validate()) {
-                            Navigator.push(
+                            FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _pass.text).then((authResult) => Firestore.instance.collection("users").document(authResult.user.uid).get().then((DocumentSnapshot result) =>
+                              Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Navigation()),
-                            );
+                            ))).catchError((err) => print(err));
                           }
                         },
                         child: Text('Login',
