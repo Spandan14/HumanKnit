@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humanknit/events.dart';
 import 'package:humanknit/stats.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -10,18 +13,36 @@ class ProfilePage extends StatefulWidget {
 }
 
 class ProfilePageState extends State<ProfilePage> {
+  bool isLoading = false;
   var statsEventsSelected = [true, false];
   var selectedIndex = 0;
   var timeSelected = [true, false, false];
   final children = [StatsPage(), EventsPage()];
 
+  String userEmail;
+
+  void fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    userEmail = user.email;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void initState() {
+    super.initState();
+    fetchData();
+  }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final nameText = Text(
-      "Frank Gao",
+      userEmail,
       style: TextStyle(
-        fontSize: 48 / 896 * screenHeight,
+        fontSize: 36 / 896 * screenHeight,
         color: Color(0xff71918d),
       ),
     );
@@ -111,7 +132,8 @@ class ProfilePageState extends State<ProfilePage> {
       ],
     );
 
-    return Column(
+    return isLoading ? Center(child: CircularProgressIndicator(),)
+    :Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         new Flexible(

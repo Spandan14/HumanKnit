@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:humanknit/customexpansiontile.dart' as custom;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'login.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -19,7 +22,7 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
+    final width = MediaQuery.of(context).size.width;
     final expansionList = Column(
       children: [
         Container(
@@ -230,6 +233,28 @@ class SettingsPageState extends State<SettingsPage> {
       ],
     );
 
+    final logoutButton = Container(
+        height: height * 130/896,
+        child: Padding (
+          padding: EdgeInsets.only(top: height * 50/896, right: width * 60/416, left: width * 60/416),
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  side: BorderSide(color: Colors.grey)),
+              color: Color(0xffaa767c),
+              onPressed: () {
+                FirebaseAuth.instance.signOut().then((result) => Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => LoginScreen()
+                ))).catchError((err) => print(err));
+              },
+              child: Text('Log Out',
+                  style:
+                  TextStyle(fontSize: 20, color: Colors.white)
+              ),
+            )
+        )
+    );
+
     return Center(
       child: ListView(
         children: [
@@ -245,6 +270,7 @@ class SettingsPageState extends State<SettingsPage> {
             height: 28 / 896 * height,
           ),
           expansionList,
+          logoutButton
         ],
       ),
     );
