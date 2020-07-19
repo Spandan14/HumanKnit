@@ -9,7 +9,7 @@ import 'nav.dart';
 void main() {
   runApp(
     MaterialApp(
-      home: SplashScreen(),
+      home: Navigation(),
     ),
   );
 }

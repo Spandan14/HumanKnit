@@ -142,25 +142,87 @@ class SettingsPageState extends State<SettingsPage> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Delete Account'),
-                        content: Text(
-                          'Are you sure you want to delete your account? You will be redirected to the login page.',
+                      return Theme(
+                        data: ThemeData(fontFamily: "BungeeInline"),
+                        child: AlertDialog(
+                          backgroundColor: Color(0xfffeefb3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)),
+                          ),
+                          title: Text(
+                            'Delete Account',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xff875053),
+                            ),
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Are you sure you want to delete your account? You will be redirected to the login page.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xffaa767c),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  FlatButton(
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(
+                                        color: Color(0xff875053),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  FlatButton(
+                                    child: Text(
+                                      'No',
+                                      style: TextStyle(
+                                        color: Color(0xff875053),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          /*actions: [
+                            // button 2
+                            FlatButton(
+                              child: Text(
+                                'Yes',
+                                style: TextStyle(
+                                  color: Color(0xff875053),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            FlatButton(
+                              child: Text(
+                                'No',
+                                style: TextStyle(
+                                  color: Color(0xff875053),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],*/
                         ),
-                        actions: [
-                          FlatButton(
-                            child: Text('Yes'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          FlatButton(
-                            child: Text('No'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
                       );
                     },
                   );
