@@ -135,6 +135,33 @@ class SettingsPageState extends State<SettingsPage> {
                     color: Color(0xffaa767c),
                   ),
                 ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Delete Account'),
+                        content: Text(
+                          'Are you sure you want to delete your account? You will be redirected to the login page.',
+                        ),
+                        actions: [
+                          FlatButton(
+                            child: Text('Yes'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text('No'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -215,7 +242,7 @@ class SettingsPageState extends State<SettingsPage> {
             ),
           ),
           SizedBox(
-            height: 28/896 * height,
+            height: 28 / 896 * height,
           ),
           expansionList,
         ],
