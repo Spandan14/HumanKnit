@@ -299,6 +299,28 @@ class _SignupFormState extends State<SignupForm> {
                             style:
                                 TextStyle(fontSize: 20, color: Colors.white)),
                       )))),
+        Container(
+          color: Colors.white,
+          width: width,
+          height: height * 80/896,
+          child: Padding (
+            padding: EdgeInsets.only(top: height * 10/896, right: width * 100/416, left: width * 100/416),
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  side: BorderSide(color: Colors.grey)),
+              color: Color(0xffaa767c),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+              child: Text('Back',
+                  style:
+                  TextStyle(fontSize: 20, color: Colors.white)
+              ),
+            )
+          )
+        )
         ],
       ),
     ));
