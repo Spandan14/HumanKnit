@@ -40,7 +40,7 @@ class _NavigationState extends State<Navigation> {
     final List<Color> backgroundColors = [
       Color(0xffc9ffc9),
       Color(0xffc1baff),
-      Color(0xffffffff),
+      Color(0xffc3d1ff),
       Color(0xffffffff),
     ];
 
