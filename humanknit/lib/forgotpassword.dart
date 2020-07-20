@@ -41,9 +41,79 @@ class ForgotPasswordForm extends StatefulWidget {
 class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   final _formKey = GlobalKey<FormState>();
 
-  @override
-  Future<void> resetPassword(String email) async {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  void handleForgotError(var err) {
+    print(err.code);
+    String errorText;
+    switch (err.code) {
+      case "ERROR_INVALID_EMAIL":
+        errorText =
+        "The email address does not appear to have the correct format.";
+        break;
+      case "ERROR_TOO_MANY_REQUESTS":
+        errorText = "Too many requests right now. Try again later.";
+        break;
+      case "OPERATION_NOT_ALLOWED":
+        errorText = "This operation is not allowed";
+        break;
+      case "ERROR_USER_NOT_FOUND":
+        errorText = "This user does not exist.";
+        break;
+      default:
+        errorText = "An unknown error occurred.";
+    }
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Theme(
+            data: ThemeData (
+                fontFamily: 'BungeeInline'
+            ),
+            child: AlertDialog (
+              backgroundColor: Color(0xfffeefb3),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.all(Radius.circular(20.0)),
+              ),
+              title: Text(
+                'An error has occurred',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xff875053),
+                ),
+              ),
+              content: Column (
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    errorText,
+                    style: TextStyle(
+                      color: Color(0xffaa767c),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Row (
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        FlatButton(
+                          child: Text(
+                            'OK',
+                            style: TextStyle(
+                              color: Color(0xff875053),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ]
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+    );
   }
 
   final TextEditingController _email = TextEditingController();
@@ -102,65 +172,10 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                           color: Color.fromRGBO(108, 123, 255, 0.5),
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
-                              resetPassword(_email.text);
-                              showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Theme(
-                                      data: ThemeData (
-                                          fontFamily: 'BungeeInline'
-                                      ),
-                                      child: AlertDialog (
-                                        backgroundColor: Color(0xfffeefb3),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0)),
-                                        ),
-                                        title: Text(
-                                          'Password Reset',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: Color(0xff875053),
-                                          ),
-                                        ),
-                                        content: Column (
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                            Text(
-                                              "A password reset email has been sent. Please use it to reset your password.",
-                                              style: TextStyle(
-                                                color: Color(0xffaa767c),
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Row (
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  FlatButton(
-                                                    child: Text(
-                                                      'OK',
-                                                      style: TextStyle(
-                                                        color: Color(0xff875053),
-                                                      ),
-                                                    ),
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  )
-                                                ]
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }
-                              );
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()),
-                              );
+                              FirebaseAuth.instance.sendPasswordResetEmail(email: _email.text).then((result) =>
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())
+                              )).catchError((err) => handleForgotError(err));
+
                             }
                           },
                           child: Text('Reset password',
