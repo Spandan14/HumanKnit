@@ -5,11 +5,12 @@ import 'login.dart';
 import 'experiences.dart';
 import 'launch.dart';
 import 'nav.dart';
+import 'startersplash.dart';
 
 void main() {
   runApp(
     MaterialApp(
-      home: SplashScreen(),
+      home: StartupSplashScreen(),
     ),
   );
 }
