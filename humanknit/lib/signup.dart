@@ -37,7 +37,7 @@ class SignupForm extends StatefulWidget {
 }
 
 class _SignupFormState extends State<SignupForm> {
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey1 = GlobalKey<FormState>();
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
   final TextEditingController _email = TextEditingController();
@@ -66,6 +66,7 @@ class _SignupFormState extends State<SignupForm> {
         errorText = "An unknown error occurred.";
     }
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return Theme(
@@ -93,6 +94,7 @@ class _SignupFormState extends State<SignupForm> {
                 style: TextStyle(
                   color: Color(0xffaa767c),
                 ),
+                textAlign: TextAlign.center,
               ),
               Row (
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -125,7 +127,7 @@ class _SignupFormState extends State<SignupForm> {
     double height = MediaQuery.of(context).size.height;
     return Material(
         child: Form(
-      key: _formKey,
+      key: _formKey1,
       child: Column(
         children: <Widget>[
           Container(
@@ -278,13 +280,13 @@ class _SignupFormState extends State<SignupForm> {
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(252, 186, 3, 1),
                         onPressed: () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey1.currentState.validate()) {
                             FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _pass.text).then((authResult) => Firestore.instance.collection("users").document(authResult.user.uid).setData({
                               "uid": authResult.user.uid,
                               "name": _username.text,
                               "email": _email.text,
                             })).then((result) =>
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => LoginScreen()),

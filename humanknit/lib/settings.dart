@@ -305,7 +305,7 @@ class SettingsPageState extends State<SettingsPage> {
                   side: BorderSide(color: Colors.grey)),
               color: Color(0xffaa767c),
               onPressed: () {
-                FirebaseAuth.instance.signOut().then((result) => Navigator.push(context, MaterialPageRoute(
+                FirebaseAuth.instance.signOut().then((result) => Navigator.pushReplacement(context, MaterialPageRoute(
                     builder: (context) => LoginScreen()
                 ))).catchError((err) => print(err));
               },

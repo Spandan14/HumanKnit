@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:humanknit/forgotpassword.dart';
 import 'package:humanknit/signup.dart';
+import 'package:humanknit/splash.dart';
 import 'nav.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +27,7 @@ class LoginScreen extends StatelessWidget {
                     right: 0.15 * width,
                     top: 20,
                     bottom: 20)),
-            LoginForm(),
+            Container(child: LoginForm()),
           ],
         ),
       ),
@@ -40,7 +41,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey2   = GlobalKey<FormState>();
 
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _email = TextEditingController();
@@ -71,6 +72,7 @@ class _LoginFormState extends State<LoginForm> {
         errorText = "An unknown error occurred.";
     }
     showDialog(
+      barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return Theme(
@@ -98,6 +100,7 @@ class _LoginFormState extends State<LoginForm> {
                     style: TextStyle(
                       color: Color(0xffaa767c),
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   Row (
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -130,7 +133,7 @@ class _LoginFormState extends State<LoginForm> {
     double height = MediaQuery.of(context).size.height;
     return Material(
         child: Form(
-      key: _formKey,
+      key: _formKey2,
       child: Column(
         children: <Widget>[
           Container(
@@ -215,12 +218,12 @@ class _LoginFormState extends State<LoginForm> {
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(252, 186, 3, 1),
                         onPressed: () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey2.currentState.validate()) {
                             FirebaseAuth.instance.signInWithEmailAndPassword(email: _email.text, password: _pass.text).then((authResult) => Firestore.instance.collection("users").document(authResult.user.uid).get().then((DocumentSnapshot result) =>
-                              Navigator.push(
+                              Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Navigation()),
+                                  builder: (context) => SplashScreen()),
                             ))).catchError((err) => handleLoginError(err));
                           }
                         },
@@ -242,7 +245,7 @@ class _LoginFormState extends State<LoginForm> {
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(108, 123, 255, 0.5),
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ForgotPasswordScreen()),
@@ -276,7 +279,7 @@ class _LoginFormState extends State<LoginForm> {
                             side: BorderSide(color: Colors.grey)),
                         color: Color.fromRGBO(108, 123, 255, 1),
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => SignupScreen()),
