@@ -53,14 +53,14 @@ class SettingsPageState extends State<SettingsPage> {
                   padding: EdgeInsets.only(
                       top: 14 / 896 * height, bottom: 14 / 896 * height),
                   child: FlatButton(
-                    child: Text(
-                      "Change Theme",
-                      style: TextStyle(
-                        fontSize: 24 / 896 * height,
-                        color: Color(0xffaa767c),
+                      child: Text(
+                        "Change Theme",
+                        style: TextStyle(
+                          fontSize: 24 / 896 * height,
+                          color: Color(0xffaa767c),
+                        ),
                       ),
-                    ),
-                  ),
+                      onPressed: () {}),
                 ),
                 getRowDivider(),
                 Padding(
@@ -139,93 +139,7 @@ class SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Theme(
-                        data: ThemeData(fontFamily: "BungeeInline"),
-                        child: AlertDialog(
-                          backgroundColor: Color(0xfffeefb3),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                          ),
-                          title: Text(
-                            'Delete Account',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xff875053),
-                            ),
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Are you sure you want to delete your account? You will be redirected to the login page.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xffaa767c),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  FlatButton(
-                                    child: Text(
-                                      'Yes',
-                                      style: TextStyle(
-                                        color: Color(0xff875053),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: Text(
-                                      'No',
-                                      style: TextStyle(
-                                        color: Color(0xff875053),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          /*actions: [
-                            // button 2
-                            FlatButton(
-                              child: Text(
-                                'Yes',
-                                style: TextStyle(
-                                  color: Color(0xff875053),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FlatButton(
-                              child: Text(
-                                'No',
-                                style: TextStyle(
-                                  color: Color(0xff875053),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],*/
-                        ),
-                      );
-                    },
-                  );
+                  showDeleteAccountDialog(height);
                 },
               ),
             ),
@@ -296,26 +210,28 @@ class SettingsPageState extends State<SettingsPage> {
     );
 
     final logoutButton = Container(
-        height: height * 130/896,
-        child: Padding (
-          padding: EdgeInsets.only(top: height * 50/896, right: width * 60/416, left: width * 60/416),
+        height: height * 130 / 896,
+        child: Padding(
+            padding: EdgeInsets.only(
+                top: height * 50 / 896,
+                right: width * 60 / 416,
+                left: width * 60 / 416),
             child: RaisedButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
                   side: BorderSide(color: Colors.grey)),
               color: Color(0xffaa767c),
               onPressed: () {
-                FirebaseAuth.instance.signOut().then((result) => Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => LoginScreen()
-                ))).catchError((err) => print(err));
+                FirebaseAuth.instance
+                    .signOut()
+                    .then((result) => Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen())))
+                    .catchError((err) => print(err));
               },
               child: Text('Log Out',
-                  style:
-                  TextStyle(fontSize: 20, color: Colors.white)
-              ),
-            )
-        )
-    );
+                  style: TextStyle(
+                      fontSize: 30 / 896 * height, color: Colors.white)),
+            )));
 
     return Center(
       child: ListView(
@@ -335,6 +251,81 @@ class SettingsPageState extends State<SettingsPage> {
           logoutButton
         ],
       ),
+    );
+  }
+
+  void showChangeThemeDialog(double height) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+          data: ThemeData(fontFamily: "BungeeInline"),
+          child: AlertDialog(),
+        );
+      },
+    );
+  }
+
+  void showDeleteAccountDialog(double height) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+          data: ThemeData(fontFamily: "BungeeInline"),
+          child: AlertDialog(
+            backgroundColor: Color(0xfffeefb3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Text(
+              'Delete Account',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xff875053),
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Are you sure you want to delete your account? You will be redirected to the login page.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xffaa767c),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FlatButton(
+                      child: Text(
+                        'Yes',
+                        style: TextStyle(
+                          color: Color(0xff875053),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    FlatButton(
+                      child: Text(
+                        'No',
+                        style: TextStyle(
+                          color: Color(0xff875053),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
