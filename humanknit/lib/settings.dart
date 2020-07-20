@@ -288,23 +288,23 @@ class SettingsPageState extends State<SettingsPage> {
                 Text(
                   "Profile Page",
                 ),
-                makeThemeRow(Color(0xff99c2a2), Color(0xff93b1a7),
-                    Color(0xff71918d), height),
+                makeThemeRow(Color(0xffc9ffc9), Color(0xff99c2a2),
+                    Color(0xff93b1a7), Color(0xff71918d), height),
                 Text(
                   "Friends Page",
                 ),
-                makeThemeRow(Color(0xffa2d6f9), Color(0xff6c7bff),
-                    Color(0xfff25740), height),
+                makeThemeRow(Color(0xffc1baff), Color(0xffa2d6f9),
+                    Color(0xff6c7bff), Color(0xfff25740), height),
                 Text(
                   "Community Page",
                 ),
-                makeThemeRow(Color(0xff35ce8d), Color(0xfff25740),
-                    Color(0xff7348a6), height),
+                makeThemeRow(Color(0xffc3d1ff), Color(0xff35ce8d),
+                    Color(0xfff25740), Color(0xff7348a6), height),
                 Text(
                   "Settings Page",
                 ),
                 makeThemeRow(Color(0xfffeefb3), Color(0xfffbbfca),
-                    Color(0xffaa767c), height),
+                    Color(0xffaa767c), Color(0xff875053), height),
                 FlatButton(
                   child: Text(
                     "Done",
@@ -324,36 +324,66 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Padding makeThemeRow(Color c1, Color c2, Color c3, double height) {
-    return Padding(
-      padding:
-          EdgeInsets.only(top: 10 / 896 * height, bottom: 40 / 896 * height),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  Padding makeThemeRow(Color c1, Color c2, Color c3, Color c4, double height) {
+    final circleDiameter = 30 / 896 * height;
+    Row colorRow() {
+      return Row(
         children: [
           Container(
-            width: 30 / 896 * height,
-            height: 30 / 896 * height,
+            width: circleDiameter,
+            height: circleDiameter,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: c1,
                 border: Border.all(color: Colors.black)),
           ),
+          SizedBox(width: circleDiameter / 2),
           Container(
-            width: 30 / 896 * height,
-            height: 30 / 896 * height,
+            width: circleDiameter,
+            height: circleDiameter,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: c2,
                 border: Border.all(color: Colors.black)),
           ),
+          SizedBox(width: circleDiameter / 2),
           Container(
-            width: 30 / 896 * height,
-            height: 30 / 896 * height,
+            width: circleDiameter,
+            height: circleDiameter,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: c3,
                 border: Border.all(color: Colors.black)),
+          ),
+          SizedBox(width: circleDiameter / 2),
+          Container(
+            width: circleDiameter,
+            height: circleDiameter,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c4,
+                border: Border.all(color: Colors.black)),
+          ),
+        ],
+      );
+    }
+
+    final row = colorRow();
+    return Padding(
+      padding:
+          EdgeInsets.only(top: 10 / 896 * height, bottom: 40 / 896 * height),
+      child: DropdownButton<Row>(
+        value: row,
+        //icon: Icon(Icons.arrow_drop_down_circle),
+        iconSize: 24,
+        elevation: 200,
+        onChanged: (Row newValue) {
+          setState(() {});
+        },
+        items: [
+          DropdownMenuItem<Row>(
+            value: row,
+            child: row,
           ),
         ],
       ),
