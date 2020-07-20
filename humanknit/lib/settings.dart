@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:humanknit/customexpansiontile.dart' as custom;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:humanknit/splash.dart';
 import 'login.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -18,6 +19,12 @@ class SettingsPageState extends State<SettingsPage> {
     [true, false],
     [true, false]
   ];
+
+  @override
+  Future<void> deleteAccount() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    await user.delete();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -305,7 +312,12 @@ class SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                       onPressed: () {
+                        deleteAccount();
                         Navigator.of(context).pop();
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()));
                       },
                     ),
                     FlatButton(
