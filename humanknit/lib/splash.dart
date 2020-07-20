@@ -12,22 +12,22 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  initState() {
-    FirebaseAuth.instance.currentUser().then((currentUser) => {
-      if (currentUser == null) {
+  void initState() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    if (user != null) {
       Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => LoginScreen()))
-      }
-      else {
+        context,
+        MaterialPageRoute(
+            builder: (context) => Navigation()),
+      );
+    }
+    else {
       Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => Navigation())),
-      print(currentUser.email)
-      }
-    }).catchError((err) => print(err));
+        context,
+        MaterialPageRoute(
+            builder: (context) => LoginScreen()),
+      );
+    }
   }
 
   @override

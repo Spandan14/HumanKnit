@@ -42,6 +42,83 @@ class _SignupFormState extends State<SignupForm> {
   final TextEditingController _confirmPass = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _username = TextEditingController();
+
+  void handleSignupError(var err) {
+    print(err.code);
+    String errorText;
+    switch (err.code) {
+      case "ERROR_INVALID_EMAIL":
+        errorText = "The email address does not appear to have the correct format.";
+        break;
+      case "ERROR_TOO_MANY_REQUESTS":
+        errorText = "Too many requests right now. Try again later.";
+        break;
+      case "OPERATION_NOT_ALLOWED":
+        errorText = "This operation is not allowed";
+        break;
+      case "ERROR_EMAIL_ALREADY_IN_USE":
+        errorText = "This email address is already in use. Please use a different one.";
+        break;
+      case "ERROR_WEAK_PASSWORD":
+        errorText = "This password is too weak. Try one with more than 6 characters.";
+        break;
+      default:
+        errorText = "An unknown error occurred.";
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+          data: ThemeData (
+            fontFamily: 'BungeeInline'
+          ),
+        child: AlertDialog (
+          backgroundColor: Color(0xfffeefb3),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.all(Radius.circular(20.0)),
+          ),
+          title: Text(
+            'An error has occurred',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xff875053),
+            ),
+          ),
+          content: Column (
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                errorText,
+                style: TextStyle(
+                  color: Color(0xffaa767c),
+                ),
+              ),
+              Row (
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FlatButton(
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                        color: Color(0xff875053),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ]
+              ),
+            ],
+          ),
+        ),
+        );
+      }
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -206,12 +283,14 @@ class _SignupFormState extends State<SignupForm> {
                               "uid": authResult.user.uid,
                               "name": _username.text,
                               "email": _email.text,
-                            })).catchError((err) => print(err));
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginScreen()),
-                            );
+                            })).then((result) =>
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()),
+                                )
+                            ).catchError((err) => handleSignupError(err));
+
                           }
                         },
                         child: Text('Sign up',

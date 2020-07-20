@@ -44,6 +44,86 @@ class _LoginFormState extends State<LoginForm> {
 
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _email = TextEditingController();
+
+  void handleLoginError(var err) {
+    print(err.code);
+    String errorText;
+    switch (err.code) {
+      case "ERROR_INVALID_EMAIL":
+        errorText = "The email address does not appear to have the correct format.";
+        break;
+      case "ERROR_TOO_MANY_REQUESTS":
+        errorText = "Too many requests right now. Try again later.";
+        break;
+      case "OPERATION_NOT_ALLOWED":
+        errorText = "This operation is not allowed";
+        break;
+      case "ERROR_USER_NOT_FOUND":
+        errorText = "This user does not exist.";
+        break;
+      case "ERROR_WRONG_PASSWORD":
+        errorText = "This password is incorrect.";
+        break;
+      case "ERROR_USER_DISABLED":
+        errorText = "This user has been disabled.";
+        break;
+      default:
+        errorText = "An unknown error occurred.";
+    }
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Theme(
+            data: ThemeData (
+                fontFamily: 'BungeeInline'
+            ),
+            child: AlertDialog (
+              backgroundColor: Color(0xfffeefb3),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.all(Radius.circular(20.0)),
+              ),
+              title: Text(
+                'An error has occurred',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xff875053),
+                ),
+              ),
+              content: Column (
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    errorText,
+                    style: TextStyle(
+                      color: Color(0xffaa767c),
+                    ),
+                  ),
+                  Row (
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        FlatButton(
+                          child: Text(
+                            'OK',
+                            style: TextStyle(
+                              color: Color(0xff875053),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ]
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -141,7 +221,7 @@ class _LoginFormState extends State<LoginForm> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Navigation()),
-                            ))).catchError((err) => print(err));
+                            ))).catchError((err) => handleLoginError(err));
                           }
                         },
                         child: Text('Login',
