@@ -67,7 +67,9 @@ class SettingsPageState extends State<SettingsPage> {
                           color: Color(0xffaa767c),
                         ),
                       ),
-                      onPressed: () {}),
+                      onPressed: () {
+                        showChangeThemeDialog(height);
+                      }),
                 ),
                 getRowDivider(),
                 Padding(
@@ -267,9 +269,94 @@ class SettingsPageState extends State<SettingsPage> {
       builder: (BuildContext context) {
         return Theme(
           data: ThemeData(fontFamily: "BungeeInline"),
-          child: AlertDialog(),
+          child: AlertDialog(
+            backgroundColor: Color(0xfffeefb3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Text(
+              'Change Theme',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xff875053),
+              ),
+            ),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Profile Page",
+                ),
+                makeThemeRow(Color(0xff99c2a2), Color(0xff93b1a7),
+                    Color(0xff71918d), height),
+                Text(
+                  "Friends Page",
+                ),
+                makeThemeRow(Color(0xffa2d6f9), Color(0xff6c7bff),
+                    Color(0xfff25740), height),
+                Text(
+                  "Community Page",
+                ),
+                makeThemeRow(Color(0xff35ce8d), Color(0xfff25740),
+                    Color(0xff7348a6), height),
+                Text(
+                  "Settings Page",
+                ),
+                makeThemeRow(Color(0xfffeefb3), Color(0xfffbbfca),
+                    Color(0xffaa767c), height),
+                FlatButton(
+                  child: Text(
+                    "Done",
+                    style: TextStyle(
+                      color: Color(0xff875053),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
         );
       },
+    );
+  }
+
+  Padding makeThemeRow(Color c1, Color c2, Color c3, double height) {
+    return Padding(
+      padding:
+          EdgeInsets.only(top: 10 / 896 * height, bottom: 40 / 896 * height),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            width: 30 / 896 * height,
+            height: 30 / 896 * height,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c1,
+                border: Border.all(color: Colors.black)),
+          ),
+          Container(
+            width: 30 / 896 * height,
+            height: 30 / 896 * height,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c2,
+                border: Border.all(color: Colors.black)),
+          ),
+          Container(
+            width: 30 / 896 * height,
+            height: 30 / 896 * height,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c3,
+                border: Border.all(color: Colors.black)),
+          ),
+        ],
+      ),
     );
   }
 

@@ -55,7 +55,7 @@ class ExperiencesPage extends StatelessWidget {
 
   FlatButton makeButton(String title, String description, double screenHeight) {
     return FlatButton(
-      color: Color(0xff35c38d),
+      color: Color(0xff35ce8d),
       padding: EdgeInsets.all(20),
       onPressed: () {},
       child: Column(
