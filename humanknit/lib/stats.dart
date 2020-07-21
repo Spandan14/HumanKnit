@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/theme.dart';
 
 class StatsPage extends StatelessWidget {
   //placeholder values: later get from backend
@@ -14,50 +15,26 @@ class StatsPage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        getTextWidget("Voted", 36, Color(0xff93b1a7), screenHeight),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            getTextWidget(numVoted.toString(), 30, Color(0xff71918d), screenHeight),
-            SizedBox(width: 10),
-            getTextWidget("Times", 24, Color(0xff99c2a2), screenHeight),
-          ]
-        ),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getTextWidget(numVotedPlaces.toString(), 30, Color(0xff71918d), screenHeight),
-              SizedBox(width: 10),
-              getTextWidget("Places", 24, Color(0xff99c2a2), screenHeight),
-            ]
-        ),
-        getTextWidget("Volunteered", 36, Color(0xff93b1a7), screenHeight),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getTextWidget(numVolunteer.toString(), 30, Color(0xff71918d), screenHeight),
-              SizedBox(width: 10),
-              getTextWidget("Times", 24, Color(0xff99c2a2), screenHeight),
-            ]
-        ),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getTextWidget(numVolunteerPlaces.toString(), 30, Color(0xff71918d), screenHeight),
-              SizedBox(width: 10),
-              getTextWidget("Places", 24, Color(0xff99c2a2), screenHeight),
-            ]
-        ),
-        getTextWidget("Achievements", 36, Color(0xff93b1a7), screenHeight),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              getTextWidget(numAchievements.toString(), 30, Color(0xff71918d), screenHeight),
-              SizedBox(width: 10),
-              getTextWidget("Completed", 24, Color(0xff99c2a2), screenHeight),
-            ]
-        )
+        getTextWidget("Voted", 36, AppTheme.THEME_COLORS[0][2], screenHeight),
+        getStatRow(numVoted, "Times", screenHeight),
+        getStatRow(numVotedPlaces, "Places", screenHeight),
+        getTextWidget("Volunteered", 36, AppTheme.THEME_COLORS[0][2], screenHeight),
+        getStatRow(numVolunteer, "Times", screenHeight),
+        getStatRow(numVolunteerPlaces, "Times", screenHeight),
+        getTextWidget("Achievements", 36, AppTheme.THEME_COLORS[0][2], screenHeight),
+        getStatRow(numAchievements, "Completed", screenHeight)
       ],
+    );
+  }
+
+  Row getStatRow(int num, String text, double screenHeight) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          getTextWidget(num.toString(), 30, AppTheme.THEME_COLORS[0][3], screenHeight),
+          SizedBox(width: 10),
+          getTextWidget(text, 24, AppTheme.THEME_COLORS[0][1], screenHeight),
+        ]
     );
   }
 

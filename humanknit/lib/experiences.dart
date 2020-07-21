@@ -1,4 +1,5 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
+import 'package:humanknit/theme.dart';
 
 class ExperiencesPage extends StatelessWidget {
   @override
@@ -10,7 +11,7 @@ class ExperiencesPage extends StatelessWidget {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 48 / 896 * screenHeight,
-        color: Color(0xff7348a6),
+        color: AppTheme.THEME_COLORS[2][3],
       ),
     );
 
@@ -55,7 +56,7 @@ class ExperiencesPage extends StatelessWidget {
 
   FlatButton makeButton(String title, String description, double screenHeight) {
     return FlatButton(
-      color: Color(0xff35ce8d),
+      color: AppTheme.THEME_COLORS[2][1],
       padding: EdgeInsets.all(20),
       onPressed: () {},
       child: Column(
@@ -64,7 +65,7 @@ class ExperiencesPage extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 30 / 896 * screenHeight,
-              color: Color(0xfff25740),
+              color: AppTheme.THEME_COLORS[2][2],
             ),
           ),
           SizedBox(

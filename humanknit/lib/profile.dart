@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:humanknit/events.dart';
 import 'package:humanknit/stats.dart';
+import 'package:humanknit/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -43,7 +44,7 @@ class ProfilePageState extends State<ProfilePage> {
       userEmail,
       style: TextStyle(
         fontSize: 36 / 896 * screenHeight,
-        color: Color(0xff71918d),
+        color: AppTheme.THEME_COLORS[0][3],
       ),
     );
 
@@ -60,7 +61,7 @@ class ProfilePageState extends State<ProfilePage> {
       selectedColor: Color(0xffffffff),
       selectedBorderColor: Color(0xff000000),
       borderColor: Color(0xff000000),
-      fillColor: Color(0xff71918d),
+      fillColor: AppTheme.THEME_COLORS[0][3],
       borderWidth: 3,
       borderRadius: BorderRadius.all(
         Radius.circular(20),
@@ -94,9 +95,9 @@ class ProfilePageState extends State<ProfilePage> {
         });
       },
       isSelected: timeSelected,
-      selectedColor: Color(0x8099c2a2),
-      selectedBorderColor: Color(0xff93b1a7),
-      borderColor: Color(0xff93b1a7),
+      selectedColor: AppTheme.THEME_COLORS[0][1].withAlpha(0x80000000),
+      selectedBorderColor: AppTheme.THEME_COLORS[0][2],
+      borderColor: AppTheme.THEME_COLORS[0][2],
       borderWidth: 1,
       borderRadius: BorderRadius.all(
         Radius.circular(20),
@@ -107,7 +108,7 @@ class ProfilePageState extends State<ProfilePage> {
             "All time",
             style: TextStyle(
               fontSize: 14 / 896 * screenHeight,
-              color: Color(0xff71918d),
+              color: AppTheme.THEME_COLORS[0][3],
             ),
           ),
         ),
@@ -116,7 +117,7 @@ class ProfilePageState extends State<ProfilePage> {
             "Year",
             style: TextStyle(
               fontSize: 14 / 896 * screenHeight,
-              color: Color(0xff71918d),
+              color: AppTheme.THEME_COLORS[0][3],
             ),
           ),
         ),
@@ -125,7 +126,7 @@ class ProfilePageState extends State<ProfilePage> {
             "Month",
             style: TextStyle(
               fontSize: 14 / 896 * screenHeight,
-              color: Color(0xff71918d),
+              color: AppTheme.THEME_COLORS[0][3],
             ),
           ),
         ),

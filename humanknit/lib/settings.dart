@@ -3,6 +3,7 @@ import 'package:humanknit/customexpansiontile.dart' as custom;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/splash.dart';
+import 'package:humanknit/theme.dart';
 import 'login.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -40,122 +41,77 @@ class SettingsPageState extends State<SettingsPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            child: custom.ExpansionTile(
-              iconColor: Color(0xff000000),
-              headerBackgroundColor: Color(0xfffbbfca),
-              backgroundColor: Color(0xfffeefb3),
-              title: Padding(
-                padding: EdgeInsets.all(28 / 896 * height),
-                child: Text(
-                  "Display",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30 / 896 * height,
-                    color: Color(0xffaa767c),
-                  ),
-                ),
-              ),
-              children: [
+            child: getExpansionTile(
+              "Display",
+              [
                 Padding(
                   padding: EdgeInsets.only(
                       top: 14 / 896 * height, bottom: 14 / 896 * height),
-                  child: FlatButton(
-                      child: Text(
-                        "Change Theme",
-                        style: TextStyle(
-                          fontSize: 24 / 896 * height,
-                          color: Color(0xffaa767c),
-                        ),
-                      ),
-                      onPressed: () {
-                        showChangeThemeDialog(height);
-                      }),
+                  child: getSettingsButton(
+                    "Change Theme",
+                    () {
+                      showChangeThemeDialog(height);
+                    },
+                    height,
+                  ),
                 ),
                 getRowDivider(),
                 Padding(
                   padding: EdgeInsets.only(
                       top: 14 / 896 * height, bottom: 14 / 896 * height),
-                  child: FlatButton(
-                    child: Text(
-                      "Replay Tutorial",
-                      style: TextStyle(
-                        fontSize: 24 / 896 * height,
-                        color: Color(0xffaa767c),
-                      ),
-                    ),
+                  child: getSettingsButton(
+                    "Replay Tutorial",
+                    () {},
+                    height,
                   ),
                 ),
               ],
+              height,
             ),
           ),
         ),
         Divider(
-          color: Color(0xff875053),
+          color: AppTheme.THEME_COLORS[3][3],
         ),
-        custom.ExpansionTile(
-          iconColor: Color(0xff000000),
-          headerBackgroundColor: Color(0xfffbbfca),
-          backgroundColor: Color(0xfffeefb3),
-          title: Padding(
-            padding: EdgeInsets.all(28 / 896 * height),
-            child: Text(
-              "Security",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 30 / 896 * height,
-                color: Color(0xffaa767c),
-              ),
-            ),
-          ),
-          children: [
+        getExpansionTile(
+          "Security",
+          [
             Padding(
               padding: EdgeInsets.only(
                   top: 14 / 896 * height, bottom: 14 / 896 * height),
-              child: FlatButton(
-                child: Text(
-                  "Change Email",
-                  style: TextStyle(
-                    fontSize: 24 / 896 * height,
-                    color: Color(0xffaa767c),
-                  ),
-                ),
+              child: getSettingsButton(
+                "Change Email",
+                () {},
+                height,
               ),
             ),
             getRowDivider(),
             Padding(
               padding: EdgeInsets.only(
                   top: 14 / 896 * height, bottom: 14 / 896 * height),
-              child: FlatButton(
-                child: Text(
-                  "Change Password",
-                  style: TextStyle(
-                    fontSize: 24 / 896 * height,
-                    color: Color(0xffaa767c),
-                  ),
-                ),
+              child: getSettingsButton(
+                "Change Password",
+                () {},
+                height,
               ),
             ),
             getRowDivider(),
             Padding(
               padding: EdgeInsets.only(
                   top: 14 / 896 * height, bottom: 14 / 896 * height),
-              child: FlatButton(
-                child: Text(
-                  "Delete Account",
-                  style: TextStyle(
-                    fontSize: 24 / 896 * height,
-                    color: Color(0xffaa767c),
-                  ),
-                ),
-                onPressed: () {
+              child: getSettingsButton(
+                "Delete Account",
+                () {
                   showDeleteAccountDialog(height);
                 },
+                height,
               ),
             ),
           ],
+          height,
         ),
         Divider(
-          color: Color(0xff875053),
+          color: AppTheme.THEME_COLORS[3][3],
         ),
         Container(
           decoration: BoxDecoration(
@@ -167,23 +123,9 @@ class SettingsPageState extends State<SettingsPage> {
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20)),
-            child: custom.ExpansionTile(
-              iconColor: Color(0xff000000),
-              headerBackgroundColor: Color(0xfffbbfca),
-              backgroundColor: Color(0xfffeefb3),
-              title: Padding(
-                padding: EdgeInsets.all(28 / 896 * height),
-                child: Text(
-                  "Privacy",
-                  maxLines: 5,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30 / 896 * height,
-                    color: Color(0xffaa767c),
-                  ),
-                ),
-              ),
-              children: [
+            child: getExpansionTile(
+              "Privacy",
+              [
                 Padding(
                   padding: EdgeInsets.only(
                       top: 14 / 896 * height, bottom: 14 / 896 * height),
@@ -212,6 +154,7 @@ class SettingsPageState extends State<SettingsPage> {
                       "Allow humanknit to use facebook data", height, 3),
                 ),
               ],
+              height,
             ),
           ),
         ),
@@ -229,7 +172,7 @@ class SettingsPageState extends State<SettingsPage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
                   side: BorderSide(color: Colors.grey)),
-              color: Color(0xffaa767c),
+              color: AppTheme.THEME_COLORS[3][2],
               onPressed: () {
                 FirebaseAuth.instance
                     .signOut()
@@ -250,7 +193,7 @@ class SettingsPageState extends State<SettingsPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 48 / 896 * height,
-              color: Color(0xff875053),
+              color: AppTheme.THEME_COLORS[3][3],
             ),
           ),
           SizedBox(
@@ -270,7 +213,7 @@ class SettingsPageState extends State<SettingsPage> {
         return Theme(
           data: ThemeData(fontFamily: "BungeeInline"),
           child: AlertDialog(
-            backgroundColor: Color(0xfffeefb3),
+            backgroundColor: AppTheme.THEME_COLORS[3][0],
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
             ),
@@ -278,7 +221,7 @@ class SettingsPageState extends State<SettingsPage> {
               'Change Theme',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Color(0xff875053),
+                color: AppTheme.THEME_COLORS[3][3],
               ),
             ),
             content: Column(
@@ -309,7 +252,7 @@ class SettingsPageState extends State<SettingsPage> {
                   child: Text(
                     "Done",
                     style: TextStyle(
-                      color: Color(0xff875053),
+                      color: AppTheme.THEME_COLORS[3][3],
                     ),
                   ),
                   onPressed: () {
@@ -321,6 +264,40 @@ class SettingsPageState extends State<SettingsPage> {
           ),
         );
       },
+    );
+  }
+
+  custom.ExpansionTile getExpansionTile(String text, children, double height) {
+    return custom.ExpansionTile(
+      iconColor: Color(0xff000000),
+      headerBackgroundColor: AppTheme.THEME_COLORS[3][1],
+      backgroundColor: AppTheme.THEME_COLORS[3][0],
+      title: Padding(
+        padding: EdgeInsets.all(28 / 896 * height),
+        child: Text(
+          text,
+          maxLines: 5,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 30 / 896 * height,
+            color: AppTheme.THEME_COLORS[3][2],
+          ),
+        ),
+      ),
+      children: children,
+    );
+  }
+
+  FlatButton getSettingsButton(String text, onPressed, double height) {
+    return FlatButton(
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 24 / 896 * height,
+          color: AppTheme.THEME_COLORS[3][2],
+        ),
+      ),
+      onPressed: onPressed,
     );
   }
 
@@ -397,7 +374,7 @@ class SettingsPageState extends State<SettingsPage> {
         return Theme(
           data: ThemeData(fontFamily: "BungeeInline"),
           child: AlertDialog(
-            backgroundColor: Color(0xfffeefb3),
+            backgroundColor: AppTheme.THEME_COLORS[3][0],
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
             ),
@@ -405,7 +382,7 @@ class SettingsPageState extends State<SettingsPage> {
               'Delete Account',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Color(0xff875053),
+                color: AppTheme.THEME_COLORS[3][3],
               ),
             ),
             content: Column(
@@ -415,7 +392,7 @@ class SettingsPageState extends State<SettingsPage> {
                   'Are you sure you want to delete your account? You will be redirected to the login page.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color(0xffaa767c),
+                    color: AppTheme.THEME_COLORS[3][2],
                   ),
                 ),
                 Row(
@@ -425,7 +402,7 @@ class SettingsPageState extends State<SettingsPage> {
                       child: Text(
                         'Yes',
                         style: TextStyle(
-                          color: Color(0xff875053),
+                          color: AppTheme.THEME_COLORS[3][3],
                         ),
                       ),
                       onPressed: () {
@@ -441,7 +418,7 @@ class SettingsPageState extends State<SettingsPage> {
                       child: Text(
                         'No',
                         style: TextStyle(
-                          color: Color(0xff875053),
+                          color: AppTheme.THEME_COLORS[3][3],
                         ),
                       ),
                       onPressed: () {
@@ -466,7 +443,7 @@ class SettingsPageState extends State<SettingsPage> {
 
   Divider getRowDivider() {
     return Divider(
-      color: Color(0xff875053),
+      color: AppTheme.THEME_COLORS[3][3],
       thickness: 2,
     );
   }
@@ -482,7 +459,7 @@ class SettingsPageState extends State<SettingsPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18 / 896 * height,
-              color: Color(0xffaa767c),
+              color: AppTheme.THEME_COLORS[3][2],
             ),
           ),
         ),
@@ -496,9 +473,9 @@ class SettingsPageState extends State<SettingsPage> {
               });
             },
             selectedColor: Color(0xffffffff),
-            fillColor: Color(0xfffbbfca),
-            borderColor: Color(0xff875053),
-            selectedBorderColor: Color(0xff875053),
+            fillColor: AppTheme.THEME_COLORS[3][1],
+            borderColor: AppTheme.THEME_COLORS[3][3],
+            selectedBorderColor: AppTheme.THEME_COLORS[3][3],
             borderRadius: BorderRadius.all(
               Radius.circular(10),
             ),

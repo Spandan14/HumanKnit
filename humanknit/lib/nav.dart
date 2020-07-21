@@ -3,6 +3,7 @@ import 'package:humanknit/profile.dart';
 import 'package:humanknit/friends.dart';
 import 'package:humanknit/experiences.dart';
 import 'package:humanknit/settings.dart';
+import 'package:humanknit/theme.dart';
 
 class Navigation extends StatefulWidget {
   @override
@@ -38,9 +39,9 @@ class _NavigationState extends State<Navigation> {
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
     final List<Color> backgroundColors = [
-      Color(0xffc9ffc9),
-      Color(0xffc1baff),
-      Color(0xffc3d1ff),
+      AppTheme.THEME_COLORS[0][0],
+      AppTheme.THEME_COLORS[1][0],
+      AppTheme.THEME_COLORS[2][0],
       Color(0xffffffff),
     ];
 
