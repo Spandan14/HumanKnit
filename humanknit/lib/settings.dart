@@ -3,7 +3,9 @@ import 'package:humanknit/customexpansiontile.dart' as custom;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/splash.dart';
+import 'package:humanknit/startersplash.dart';
 import 'package:humanknit/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -14,11 +16,18 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  var selected = [
+  List selected = [
     [true, false],
     [true, false],
     [true, false],
     [true, false]
+  ];
+
+  List themeSelected = [
+    AppTheme.PROFILE_THEMES.indexOf(AppTheme.THEME_COLORS[0]),
+    AppTheme.FRIENDS_THEMES.indexOf(AppTheme.THEME_COLORS[1]),
+    AppTheme.COMMUNITY_THEMES.indexOf(AppTheme.THEME_COLORS[2]),
+    AppTheme.SETTINGS_THEMES.indexOf(AppTheme.THEME_COLORS[3]),
   ];
 
   @override
@@ -224,47 +233,65 @@ class SettingsPageState extends State<SettingsPage> {
                 color: AppTheme.THEME_COLORS[3][3],
               ),
             ),
-            content: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Profile Page",
-                ),
-                makeThemeRow(Color(0xffc9ffc9), Color(0xff99c2a2),
-                    Color(0xff93b1a7), Color(0xff71918d), height),
-                Text(
-                  "Friends Page",
-                ),
-                makeThemeRow(Color(0xffc1baff), Color(0xffa2d6f9),
-                    Color(0xff6c7bff), Color(0xfff25740), height),
-                Text(
-                  "Community Page",
-                ),
-                makeThemeRow(Color(0xffc3d1ff), Color(0xff35ce8d),
-                    Color(0xfff25740), Color(0xff7348a6), height),
-                Text(
-                  "Settings Page",
-                ),
-                makeThemeRow(Color(0xfffeefb3), Color(0xfffbbfca),
-                    Color(0xffaa767c), Color(0xff875053), height),
-                FlatButton(
-                  child: Text(
-                    "Done",
-                    style: TextStyle(
-                      color: AppTheme.THEME_COLORS[3][3],
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Profile Page",
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+                    makeThemeRow(0, height, setState),
+                    Text(
+                      "Friends Page",
+                    ),
+                    makeThemeRow(1, height, setState),
+                    Text(
+                      "Community Page",
+                    ),
+                    makeThemeRow(2, height, setState),
+                    Text(
+                      "Settings Page",
+                    ),
+                    makeThemeRow(3, height, setState),
+                    FlatButton(
+                      child: Text(
+                        "Save",
+                        style: TextStyle(
+                          color: AppTheme.THEME_COLORS[3][3],
+                        ),
+                      ),
+                      onPressed: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        prefs.setInt('theme', genThemeValue());
+                        Navigator.of(context).pop();
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => StartupSplashScreen()));
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );
       },
     );
+  }
+
+  int genThemeValue() {
+    int value = 0;
+    for (int i = 0; i < themeSelected.length; i++) {
+      value += themeSelected[i];
+      value <<= 2;
+    }
+    value >>= 2;
+
+    return value;
   }
 
   custom.ExpansionTile getExpansionTile(String text, children, double height) {
@@ -301,68 +328,73 @@ class SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Padding makeThemeRow(Color c1, Color c2, Color c3, Color c4, double height) {
+  Padding makeThemeRow(int pageIndex, double height, StateSetter setState) {
     final circleDiameter = 30 / 896 * height;
-    Row colorRow() {
+
+    Container getCircleContainer(Color c) {
+      return Container(
+        width: circleDiameter,
+        height: circleDiameter,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: c,
+            border: Border.all(color: Colors.black)),
+      );
+    }
+
+    Row colorRow(colors) {
       return Row(
         children: [
-          Container(
-            width: circleDiameter,
-            height: circleDiameter,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: c1,
-                border: Border.all(color: Colors.black)),
-          ),
+          getCircleContainer(colors[0]),
           SizedBox(width: circleDiameter / 2),
-          Container(
-            width: circleDiameter,
-            height: circleDiameter,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: c2,
-                border: Border.all(color: Colors.black)),
-          ),
+          getCircleContainer(colors[1]),
           SizedBox(width: circleDiameter / 2),
-          Container(
-            width: circleDiameter,
-            height: circleDiameter,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: c3,
-                border: Border.all(color: Colors.black)),
-          ),
+          getCircleContainer(colors[2]),
           SizedBox(width: circleDiameter / 2),
-          Container(
-            width: circleDiameter,
-            height: circleDiameter,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: c4,
-                border: Border.all(color: Colors.black)),
-          ),
+          getCircleContainer(colors[3]),
         ],
       );
     }
 
-    final row = colorRow();
+    List<Row> pageThemeRows = List<Row>();
+    List<List<Color>> pageThemes = List<List<Color>>();
+    switch (pageIndex) {
+      case 0:
+        pageThemes = AppTheme.PROFILE_THEMES;
+        break;
+      case 1:
+        pageThemes = AppTheme.FRIENDS_THEMES;
+        break;
+      case 2:
+        pageThemes = AppTheme.COMMUNITY_THEMES;
+        break;
+      case 3:
+        pageThemes = AppTheme.SETTINGS_THEMES;
+        break;
+    }
+
+    for (int i = 0; i < pageThemes.length; i++) {
+      pageThemeRows.add(colorRow(pageThemes[i]));
+    }
+
     return Padding(
       padding:
           EdgeInsets.only(top: 10 / 896 * height, bottom: 40 / 896 * height),
       child: DropdownButton<Row>(
-        value: row,
-        //icon: Icon(Icons.arrow_drop_down_circle),
+        value: pageThemeRows[themeSelected[pageIndex]],
         iconSize: 24,
         elevation: 200,
-        onChanged: (Row newValue) {
-          setState(() {});
+        onChanged: (Row value) {
+          setState(() {
+            themeSelected[pageIndex] = pageThemeRows.indexOf(value);
+          });
         },
-        items: [
-          DropdownMenuItem<Row>(
-            value: row,
-            child: row,
-          ),
-        ],
+        items: pageThemeRows.map((Row value) {
+          return DropdownMenuItem<Row>(
+            value: value,
+            child: value,
+          );
+        }).toList(),
       ),
     );
   }

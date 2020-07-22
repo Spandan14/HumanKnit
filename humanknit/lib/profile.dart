@@ -95,7 +95,7 @@ class ProfilePageState extends State<ProfilePage> {
         });
       },
       isSelected: timeSelected,
-      selectedColor: AppTheme.THEME_COLORS[0][1].withAlpha(0x80000000),
+      selectedColor: AppTheme.THEME_COLORS[0][1].withAlpha(127),
       selectedBorderColor: AppTheme.THEME_COLORS[0][2],
       borderColor: AppTheme.THEME_COLORS[0][2],
       borderWidth: 1,

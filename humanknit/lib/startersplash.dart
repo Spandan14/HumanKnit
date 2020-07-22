@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:humanknit/theme.dart';
 import 'launch.dart';
 import 'splash.dart';
 
@@ -17,6 +18,13 @@ class _StartupSplashScreenState extends State<StartupSplashScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool firstTime = prefs.getBool('firstTime');
 
+    //Theme integer is 8 bits - two bits(4 values) per page theme
+    int themeInteger = prefs.getInt('theme');
+    if (themeInteger == null) {
+      themeInteger = 0;
+      prefs.setInt('theme', themeInteger);
+    }
+    AppTheme.setThemeColors(themeInteger);
 
     if (firstTime != null && !firstTime) {// Not first time
       print("0");
