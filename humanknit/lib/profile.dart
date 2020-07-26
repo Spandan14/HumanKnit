@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:humanknit/editprofile.dart';
 
 class MainProfilePage extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
 
 
   bool backButtonVisible = false;
+  bool settingsHint = false;
   String profileName, profileDesc, profilePic;
 
 
@@ -29,6 +31,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
          datasnapshot.data['name'] != null ? profileName = datasnapshot.data['name'].toString(): profileName = "Set your name!";
          datasnapshot.data['desc'] != null ? profileDesc = datasnapshot.data['desc'].toString(): profileDesc = "Set your profile description!";
          datasnapshot.data['pic'] != null ? profilePic = datasnapshot.data['pic'].toString(): profilePic = "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
+         settingsHint = true;
        });
      }
 
@@ -60,8 +63,24 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.settings, color: Colors.white,),
-
+                  onPressed: () {Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditProfilePage()),
+                  );},
+                  icon: Stack(
+                    children: <Widget>[
+                      Icon(Icons.settings, color: Colors.white,),
+                      Visibility(
+                        visible: settingsHint,
+                        child: new Positioned(
+                          top: 0.0,
+                          right: 0.0,
+                          child: Icon(Icons.brightness_1, size: 10, color: Colors.redAccent),
+                        ),
+                      )
+                    ],
+                  ),
                   tooltip: "Profile Settings",
                 ),
                 IconButton(
@@ -145,7 +164,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
             Container(
               alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 8/360 * width, top: 10/692 * height),
+                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height),
                   child: Text(
                     profileName,
                     style: TextStyle(
@@ -159,7 +178,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
             Container(
               alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 8/360 * width, top: 10/692 * height),
+                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height),
                   child: Text(
                     profileDesc,
                     style: TextStyle(
@@ -187,6 +206,5 @@ class _MainProfilePageState extends State<MainProfilePage> {
         ),
       );
     }
-
   }
 }

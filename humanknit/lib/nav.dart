@@ -41,7 +41,7 @@ class _NavigationState extends State<Navigation> {
       Color(0xffffffff),
     ];
     final List<Widget> children = [
-      Padding(padding: EdgeInsets.all(10), child: MainProfilePage()),
+      Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
       Padding(padding: EdgeInsets.all(10), child: FriendsPage()),
       Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
