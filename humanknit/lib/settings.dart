@@ -255,6 +255,10 @@ class SettingsPageState extends State<SettingsPage> {
                       "Settings Page",
                     ),
                     makeThemeRow(3, height, setState),
+                    Text(
+                      "If you save, you will be redirected to your profile page.",
+                      textAlign: TextAlign.center,
+                    ),
                     FlatButton(
                       child: Text(
                         "Save",

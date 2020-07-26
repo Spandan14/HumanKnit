@@ -48,6 +48,7 @@ class AppTheme {
     var themeNumCpy = themeNum;
     print("OFIJSLFJLSDKFJLSDKFJSLDKFJSLDKFJSLDKFJLSDKFJLSKDJF"); // frank wrote this line
     print(themeNum);
+
     THEME_COLORS[3] = SETTINGS_THEMES[themeNumCpy & 3];
     themeNumCpy >>= 2;
     THEME_COLORS[2] = COMMUNITY_THEMES[themeNumCpy & 3];
