@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:humanknit/profile.dart';
+import 'package:humanknit/userstats.dart';
 import 'package:humanknit/friends.dart';
 import 'package:humanknit/experiences.dart';
 import 'package:humanknit/settings.dart';
 import 'package:humanknit/theme.dart';
+import 'package:humanknit/profile.dart';
 
 class Navigation extends StatefulWidget {
   @override
@@ -32,17 +34,17 @@ class _NavigationState extends State<Navigation> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final iconSize = 30 / 896 * screenHeight;
-    final List<Widget> children = [
-      Padding(padding: EdgeInsets.all(10), child: ProfilePage()),
-      Padding(padding: EdgeInsets.all(10), child: FriendsPage()),
-      Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
-      Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
-    ];
     final List<Color> backgroundColors = [
-      AppTheme.THEME_COLORS[0][0],
+      Colors.white,
       AppTheme.THEME_COLORS[1][0],
       AppTheme.THEME_COLORS[2][0],
       Color(0xffffffff),
+    ];
+    final List<Widget> children = [
+      Padding(padding: EdgeInsets.all(10), child: MainProfilePage()),
+      Padding(padding: EdgeInsets.all(10), child: FriendsPage()),
+      Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
+      Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
 
     return MaterialApp(
