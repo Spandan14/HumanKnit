@@ -25,17 +25,49 @@ class _MainProfilePageState extends State<MainProfilePage> {
     DocumentReference profileDocument = await Firestore.instance.document("users/$uid/data/profileData");
     profileDocument.get().then((datasnapshot) {
      print("data yes");
+     if (datasnapshot.exists) {
      print(datasnapshot.data['name'].toString());
      if (profileName == null || profileDesc == null || profilePic == null) {
        setState(() {
-         datasnapshot.data['name'] != null ? profileName = datasnapshot.data['name'].toString(): profileName = "Set your name!";
-         datasnapshot.data['desc'] != null ? profileDesc = datasnapshot.data['desc'].toString(): profileDesc = "Set your profile description!";
-         datasnapshot.data['pic'] != null ? profilePic = datasnapshot.data['pic'].toString(): profilePic = "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
+         if (datasnapshot.data['name'] != null) {
+           profileName = datasnapshot.data['name'].toString();
+         } else {
+           profileName = "Set your name!";
+           settingsHint = true;
+         }
+         if (datasnapshot.data['name'] != null) {
+           profileName = datasnapshot.data['name'].toString();
+         } else {
+           profileName = "Set your name!";
+           settingsHint = true;
+         }
+         if (datasnapshot.data['desc'] != null) {
+           profileDesc = datasnapshot.data['desc'].toString();
+         } else {
+           profileDesc = "Set your profile description!";
+           settingsHint = true;
+         }
+         if (datasnapshot.data['pic'] != null) {
+           profilePic = datasnapshot.data['pic'].toString();
+         } else {
+           profilePic =
+           "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
+           settingsHint = true;
+         }
+       }
+       );
+     }
+     }
+     else {
+       print("nodoc");
+       setState(() {
+         profileName = "Set your name!";
+         profileDesc = "Set your profile description!";
+         profilePic = "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
          settingsHint = true;
        });
-     }
+     }});
 
-    });
   }
 
   @override
@@ -48,9 +80,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
     double height = MediaQuery.of(context).size.height;
     print("returning");
     try {
-      return Material(
-        color: Colors.white,
-        child: Column(
+      return Scaffold(
+        body: Column(
           children: <Widget>[
             AppBar(
               actions: <Widget>[
@@ -63,7 +94,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {Navigator.pushReplacement(
+                  onPressed: () {Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditProfilePage()),
@@ -192,6 +223,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
         ),
       );
     } catch (e) {
+      print(e);
       return Scaffold(
         body: Center(
           child: Container(
