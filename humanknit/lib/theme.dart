@@ -46,6 +46,8 @@ class AppTheme {
 
   static void setThemeColors(int themeNum) {
     var themeNumCpy = themeNum;
+    print("OFIJSLFJLSDKFJLSDKFJSLDKFJSLDKFJSLDKFJLSDKFJLSKDJF"); // frank wrote this line
+    print(themeNum);
 
     THEME_COLORS[3] = SETTINGS_THEMES[themeNumCpy & 3];
     themeNumCpy >>= 2;
