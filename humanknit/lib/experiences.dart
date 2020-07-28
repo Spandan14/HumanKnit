@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/search.dart';
 import 'package:humanknit/theme.dart';
 
 class ExperiencesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print("DHFLSJHDLFJDFLSD");
     final screenHeight = MediaQuery.of(context).size.height;
-
+    print(screenHeight);
     final pageTitle = Text(
       "Events & Experiences",
       textAlign: TextAlign.center,
@@ -16,11 +18,11 @@ class ExperiencesPage extends StatelessWidget {
     );
 
     final volunteeringButton =
-        makeButton("Volunteering", "Lend a helping hand", screenHeight);
+        makeButton("Volunteering", "Lend a helping hand", screenHeight, EVENT_TYPE.VOLUNTEER, context);
     final votingButton =
-        makeButton("Voting", "Make your voice heard", screenHeight);
+        makeButton("Voting", "Make your voice heard", screenHeight, EVENT_TYPE.VOTE, context);
     final communityButton =
-        makeButton("Community Events", "Enjoy the fun!", screenHeight);
+        makeButton("Community Events", "Enjoy the fun!", screenHeight, EVENT_TYPE.COMMUNITY, context);
 
     return Center(
       child: Column(
@@ -54,11 +56,22 @@ class ExperiencesPage extends StatelessWidget {
     );
   }
 
-  FlatButton makeButton(String title, String description, double screenHeight) {
+  void pushSearchPage(EVENT_TYPE t, BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SearchPage(t),
+      ),
+    );
+  }
+
+  FlatButton makeButton(String title, String description, double screenHeight, EVENT_TYPE t, BuildContext context) {
     return FlatButton(
       color: AppTheme.THEME_COLORS[2][1],
       padding: EdgeInsets.all(20),
-      onPressed: () {},
+      onPressed: () {
+        pushSearchPage(t, context);
+      },
       child: Column(
         children: [
           Text(
