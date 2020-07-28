@@ -11,6 +11,43 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
 
   static final _pageKey = GlobalKey<FormState>();
   final TextEditingController _username = TextEditingController();
+  ScrollController _scrollControl = new ScrollController();
+
+  List<String> _searchedUserPFPS = List<String>();
+  List<String> _searchedUserNames = List<String>();
+  List<String> _searchedUserUsernames = List<String>();
+
+  Future<int> fetchUsers(String username) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final QuerySnapshot users = await Firestore.instance.collection("users").getDocuments();
+    final List<DocumentSnapshot> userDocs = users.documents;
+    List<String> searchedUserPFPS = List<String>();
+    List<String> searchedUserNames = List<String>();
+    List<String> searchedUserUsernames = List<String>();
+    await userDocs.forEach((DocumentSnapshot user) async {
+      String currentUID = user.data["uid"];
+      DocumentReference currentProfileDataDocument = await Firestore.instance.document("users/$currentUID/data/profileData");
+      currentProfileDataDocument.get().then((datasnapshot) {
+        if (datasnapshot.exists) {
+          String currentName = datasnapshot.data["name"].toString();
+          print(currentName);
+          if (currentName.contains(username)) {
+            searchedUserNames.add(currentName);
+            searchedUserPFPS.add(datasnapshot.data["pic"].toString());
+            searchedUserUsernames.add(user.data["name"]);
+            setState(() {
+              _searchedUserNames = searchedUserNames;
+              _searchedUserPFPS = searchedUserPFPS;
+              _searchedUserUsernames = searchedUserUsernames;
+              print(_searchedUserUsernames);
+            });
+          }
+        }
+      });
+    });
+  }
+
+
 
 
   @override
@@ -61,11 +98,77 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
                         )
                     ),
                     ),
+                  ),
+                  Container(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 40/692 * height, left: 40/360 * width, right: 40/360 * width),
+                        child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                side: BorderSide(color: Colors.grey)),
+                            color: Color.fromRGBO(252, 186, 3, 1),
+                            onPressed: () async {
+                              if (_pageKey.currentState.validate()) {
+                                fetchUsers(_username.text);
+        
+                              }
+                            },
+                            child: Text('Search for Users',
+                                style:
+                                TextStyle(fontSize: 20, color: Colors.white))
+                        ),
+                      )
+                  ),
+                  ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollControl,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, index) {
+                      return(getTile(index));
+                  },
+                  itemCount: _searchedUserUsernames.length,
                   )
                 ],
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+  getTile(int position) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    String username = _searchedUserUsernames[position];
+    String name = _searchedUserNames[position];
+    String pfp = _searchedUserPFPS[position];
+    return Container(
+      child: Card(
+        child: ListTile(
+          contentPadding: EdgeInsets.symmetric(vertical: 8/692 * height, horizontal: 6/360 * width),
+          leading: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(pfp),
+                    fit: BoxFit.cover
+                ),
+                border: Border.all(
+                    color: Colors.black,
+                    width: 2
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(500),
+                )
+            ),
+          ),
+          title: Text(
+            name,
+          ),
+          subtitle: Text(
+            username,
+          ),
         ),
       ),
     );
