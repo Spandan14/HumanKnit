@@ -15,7 +15,32 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   File _pfpImage;
-  String _uploadedFileURL;
+  String _uploadedFileURL = "";
+
+  Future chooseImage() async {
+    await ImagePicker.pickImage(source: ImageSource.gallery).then((image) {
+      setState(() {
+        _pfpImage = image;
+      });
+    });
+  }
+
+  Future uploadFile() async {
+    if (_pfpImage == null) {
+      return null;
+    }
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    StorageReference storageReference = FirebaseStorage.instance.ref().child('$uid/profile/${Path.basename(_pfpImage.path)}');
+    StorageUploadTask uploadTask = storageReference.putFile(_pfpImage);
+    await uploadTask.onComplete;
+    print('image uploaded');
+    storageReference.getDownloadURL().then((fileUrl) {
+      setState(() {
+        _uploadedFileURL = fileUrl;
+      });
+    });
+  }
 
 
   static final _profileKey = GlobalKey<FormState>();
@@ -33,8 +58,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         profileDocument.setData({"name":name}, merge: true);
     if (desc != "")
       profileDocument.setData({"desc":desc}, merge: true);
-    if (pic != "")
-      profileDocument.setData({"pic":pic}, merge: true);
+    if (_uploadedFileURL != "")
+      profileDocument.setData({"pic":_uploadedFileURL}, merge: true);
   }
   
   
@@ -118,32 +143,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Container(
                       child: Padding(
                           padding: EdgeInsets.only(top: 20/692 * height, left: 20/360 * width, right: 20/360 * width),
-                          child: TextFormField(
-                              controller: _pic,
-                              validator: (value) {
-                                if (Uri.parse(value).isAbsolute == false && !value.isEmpty) {
-                                  return "Please enter a valid image URL";
-                                }
-                                return null;
-                              },
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                              decoration: InputDecoration(
-                                errorStyle: TextStyle(fontSize: 8),
-                                contentPadding: EdgeInsets.only(top: 4/692 * height, bottom: 4/692 * height, left: 15/360 * width),
-                                hintText: "Profile Image URL",
-                                border: OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                    const Radius.circular(100.0),
-                                  ),
-                                  borderSide: BorderSide(
-                                    color: Color.fromRGBO(177, 177, 177, 1),
-                                    width: 0.5,
-                                  ),
-                                ),
-                              )
-                          )
+                        child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                side: BorderSide(color: Colors.grey)),
+                            color: Color.fromRGBO(252, 186, 3, 1),
+                            onPressed: () {
+                              chooseImage();
+                            },
+                            child: Text('Choose Image',
+                                style:
+                                TextStyle(fontSize: 20, color: Colors.white))
+                        ),
+                      )),
+                  Container(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 20/692 * height, left: 20/360 * width, right: 20/360 * width),
+                        child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                side: BorderSide(color: Colors.grey)),
+                            color: Color.fromRGBO(252, 186, 3, 1),
+                            onPressed: () {
+                              uploadFile();
+                            },
+                            child: Text('Set Image as Profile Picture',
+                                style:
+                                TextStyle(fontSize: 12, color: Colors.white))
+                        ),
                       )),
                 Padding(
                   padding: EdgeInsets.only(left: 40/360 * width, right: 40/360 * width, top: 40/692 * height),
