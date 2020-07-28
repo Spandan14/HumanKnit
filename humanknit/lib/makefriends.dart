@@ -18,6 +18,11 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
   List<String> _searchedUserUsernames = List<String>();
 
   Future<int> fetchUsers(String username) async {
+    setState(() {
+      _searchedUserPFPS.clear();
+      _searchedUserUsernames.clear();
+      _searchedUserNames.clear();
+    });
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final QuerySnapshot users = await Firestore.instance.collection("users").getDocuments();
     final List<DocumentSnapshot> userDocs = users.documents;
@@ -119,14 +124,19 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
                         ),
                       )
                   ),
-                  ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    controller: _scrollControl,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, index) {
-                      return(getTile(index));
-                  },
-                  itemCount: _searchedUserUsernames.length,
+                  SingleChildScrollView(
+                    child: Container(
+                      height: 450,
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        controller: _scrollControl,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, index) {
+                          return(getTile(index));
+                      },
+                      itemCount: _searchedUserUsernames.length,
+                      ),
+                    ),
                   )
                 ],
               ),
