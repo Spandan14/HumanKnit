@@ -3,6 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/profile.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as Path;
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -10,6 +14,10 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  File _pfpImage;
+  String _uploadedFileURL;
+
+
   static final _profileKey = GlobalKey<FormState>();
 
   final TextEditingController _name = TextEditingController();
@@ -21,11 +29,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
     DocumentReference profileDocument = await Firestore.instance.document("users/$uid/data/profileData");
-    profileDocument.setData({
-      "name": name,
-      "desc" : desc,
-      "pic" : pic
-    }, merge: true);
+    if (name != "")
+        profileDocument.setData({"name":name}, merge: true);
+    if (desc != "")
+      profileDocument.setData({"desc":desc}, merge: true);
+    if (pic != "")
+      profileDocument.setData({"pic":pic}, merge: true);
   }
   
   
@@ -54,9 +63,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       child: TextFormField(
                         controller: _name,
                         validator: (value) {
-                          if (value.isEmpty) {
-                            return "Please enter a name";
-                          }
                           return null;
                         },
                         style: TextStyle(
@@ -84,10 +90,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: TextFormField(
                               controller: _desc,
                               validator: (value) {
-                                if (value.isEmpty) {
-                                  return "Please tell us about yourself";
-                                }
-                                if (value.length > 140) {
+                                if (value.length > 140 && !value.isEmpty) {
                                   int len = value.length;
                                   return "You used $len characters! The maximum is 140.";
                                 }
@@ -118,10 +121,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: TextFormField(
                               controller: _pic,
                               validator: (value) {
-                                if (value.isEmpty) {
-                                  return "Please enter an image URL";
-                                }
-                                if (Uri.parse(value).isAbsolute == false) {
+                                if (Uri.parse(value).isAbsolute == false && !value.isEmpty) {
                                   return "Please enter a valid image URL";
                                 }
                                 return null;
@@ -145,6 +145,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               )
                           )
                       )),
+                Padding(
+                  padding: EdgeInsets.only(left: 40/360 * width, right: 40/360 * width, top: 40/692 * height),
+                  child: Container(
+                      width: 360,
+                      child: Text(
+                        'Please be patient for our servers to update your information, as this may take a minute',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      )),
+                ),
                 Container(
                   child: Padding(
                     padding: EdgeInsets.only(top: 40/692 * height, left: 40/360 * width, right: 40/360 * width),

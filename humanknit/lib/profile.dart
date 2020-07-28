@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
+import 'package:humanknit/makefriends.dart';
 
 class MainProfilePage extends StatefulWidget {
   @override
@@ -115,6 +116,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   tooltip: "Profile Settings",
                 ),
                 IconButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MakeFriendsPage()));
+                  },
                   icon: Icon(Icons.search, color: Colors.white,),
                   tooltip: "Make Friends",
                 ),
@@ -209,7 +213,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
             Container(
               alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height),
+                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height, right: 16/360 * width),
                   child: Text(
                     profileDesc,
                     style: TextStyle(
