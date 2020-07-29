@@ -71,7 +71,7 @@ flutter:
   fonts:
     - family: BungeeInline
       fonts:
-        - asset: fonts/BungeeInline-Regular.ttf
+        - asset: fonts/Bungee-LowercaseCustomized.otf
   # fonts:
   #   - family: Schyler
   #     fonts:
