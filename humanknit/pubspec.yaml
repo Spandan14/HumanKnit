@@ -31,6 +31,7 @@ dependencies:
   flutter_webview_plugin:
   image_picker: ^0.6.0+17
   firebase_storage: ^3.0.3
+  xml:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
