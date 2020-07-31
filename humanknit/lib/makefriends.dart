@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:humanknit/friendprofile.dart';
 
 class MakeFriendsPage extends StatefulWidget {
   @override
@@ -16,19 +17,23 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
   List<String> _searchedUserPFPS = List<String>();
   List<String> _searchedUserNames = List<String>();
   List<String> _searchedUserUsernames = List<String>();
+  List<String> _searchedUserUIDS = List<String>();
 
   Future<int> fetchUsers(String username) async {
     setState(() {
       _searchedUserPFPS.clear();
       _searchedUserUsernames.clear();
       _searchedUserNames.clear();
+      _searchedUserUIDS.clear();
     });
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    final String userUID = user.uid;
     final QuerySnapshot users = await Firestore.instance.collection("users").getDocuments();
     final List<DocumentSnapshot> userDocs = users.documents;
     List<String> searchedUserPFPS = List<String>();
     List<String> searchedUserNames = List<String>();
     List<String> searchedUserUsernames = List<String>();
+    List<String> searchedUserUIDS = List<String>();
     await userDocs.forEach((DocumentSnapshot user) async {
       String currentUID = user.data["uid"];
       DocumentReference currentProfileDataDocument = await Firestore.instance.document("users/$currentUID/data/profileData");
@@ -36,14 +41,16 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
         if (datasnapshot.exists) {
           String currentName = datasnapshot.data["name"].toString();
           print(currentName);
-          if (currentName.contains(username)) {
+          if (currentName.contains(username) && currentUID != userUID) {
             searchedUserNames.add(currentName);
             searchedUserPFPS.add(datasnapshot.data["pic"].toString());
             searchedUserUsernames.add(user.data["name"]);
+            searchedUserUIDS.add(user.data["uid"]);
             setState(() {
               _searchedUserNames = searchedUserNames;
               _searchedUserPFPS = searchedUserPFPS;
               _searchedUserUsernames = searchedUserUsernames;
+              _searchedUserUIDS = searchedUserUIDS;
               print(_searchedUserUsernames);
             });
           }
@@ -152,9 +159,13 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
     String username = _searchedUserUsernames[position];
     String name = _searchedUserNames[position];
     String pfp = _searchedUserPFPS[position];
+    String uid = _searchedUserUIDS[position];
     return Container(
       child: Card(
         child: ListTile(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendProfilePage(friendUID: uid,)));
+          },
           contentPadding: EdgeInsets.symmetric(vertical: 8/692 * height, horizontal: 6/360 * width),
           leading: Container(
             height: 60,
