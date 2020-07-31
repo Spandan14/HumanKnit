@@ -10,10 +10,7 @@ class MainProfilePage extends StatefulWidget {
   _MainProfilePageState createState() => _MainProfilePageState();
 }
 
-
 class _MainProfilePageState extends State<MainProfilePage> {
-
-
   bool backButtonVisible = false;
   bool settingsHint = false;
   bool requestsHint = false;
@@ -21,56 +18,61 @@ class _MainProfilePageState extends State<MainProfilePage> {
   int numFriends;
   int numRequests;
 
-  Future<void>fetchData() async {
-
+  Future<void> fetchData() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
 
     // getting profile data
-    DocumentReference profileDocument = await Firestore.instance.document("users/$uid/data/profileData");
+    DocumentReference profileDocument =
+        await Firestore.instance.document("users/$uid/data/profileData");
     profileDocument.get().then((datasnapshot) {
-     print("data yes");
-     if (datasnapshot.exists) {
-     print(datasnapshot.data['name'].toString());
-     if (profileName == null || profileDesc == null || profilePic == null) {
-       setState(() {
-         if (datasnapshot.data['name'] != null) {
-           profileName = datasnapshot.data['name'].toString();
-         } else {
-           profileName = "Set your name!";
-           settingsHint = true;
-         }
-         if (datasnapshot.data['desc'] != null) {
-           profileDesc = datasnapshot.data['desc'].toString();
-         } else {
-           profileDesc = "Set your profile description!";
-           settingsHint = true;
-         }
-         if (datasnapshot.data['pic'] != null) {
-           profilePic = datasnapshot.data['pic'].toString();
-         } else {
-           profilePic =
-           "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
-           settingsHint = true;
-         }
-       }
-       );
-     }
-     }
-     else {
-       print("nodoc");
-       setState(() {
-         profileName = "Set your name!";
-         profileDesc = "Set your profile description!";
-         profilePic = "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
-         settingsHint = true;
-       });
-     }});
+      print("data yes");
+      if (datasnapshot.exists) {
+        print(datasnapshot.data['name'].toString());
+        if (profileName == null || profileDesc == null || profilePic == null) {
+          setState(() {
+            if (datasnapshot.data['name'] != null) {
+              profileName = datasnapshot.data['name'].toString();
+            } else {
+              profileName = "Set your name!";
+              settingsHint = true;
+            }
+            if (datasnapshot.data['desc'] != null) {
+              profileDesc = datasnapshot.data['desc'].toString();
+            } else {
+              profileDesc = "Set your profile description!";
+              settingsHint = true;
+            }
+            if (datasnapshot.data['pic'] != null) {
+              profilePic = datasnapshot.data['pic'].toString();
+            } else {
+              profilePic =
+                  "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
+              settingsHint = true;
+            }
+          });
+        }
+      } else {
+        print("nodoc");
+        setState(() {
+          profileName = "Set your name!";
+          profileDesc = "Set your profile description!";
+          profilePic =
+              "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png";
+          settingsHint = true;
+        });
+      }
+    });
 
     // getting friends data
-    DocumentReference friendsDocument = await Firestore.instance.document("users/$uid/data/friendsData");
-    QuerySnapshot friends = await Firestore.instance.collection("users/$uid/data/friendsData/friends").getDocuments();
-    QuerySnapshot requests = await Firestore.instance.collection("users/$uid/data/friendsData/requests").getDocuments();
+    DocumentReference friendsDocument =
+        await Firestore.instance.document("users/$uid/data/friendsData");
+    QuerySnapshot friends = await Firestore.instance
+        .collection("users/$uid/data/friendsData/friends")
+        .getDocuments();
+    QuerySnapshot requests = await Firestore.instance
+        .collection("users/$uid/data/friendsData/requests")
+        .getDocuments();
     List<DocumentSnapshot> friendDocs = friends.documents;
     List<DocumentSnapshot> requestDocs = requests.documents;
     friendsDocument.get().then((datasnapshot) {
@@ -84,9 +86,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
             setState(() {
               numRequests = 0;
             });
-          }
-          else {
-
+          } else {
             setState(() {
               numRequests = datasnapshot.data["numRequests"];
               if (numRequests != 0) {
@@ -98,15 +98,13 @@ class _MainProfilePageState extends State<MainProfilePage> {
             setState(() {
               numFriends = 0;
             });
-          }
-          else {
+          } else {
             setState(() {
               numFriends = datasnapshot.data['numFriends'];
             });
           }
         }
-      }
-      else {
+      } else {
         setState(() {
           numFriends = 0;
           numRequests = 0;
@@ -122,8 +120,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     fetchData();
 
     double width = MediaQuery.of(context).size.width;
@@ -138,26 +134,34 @@ class _MainProfilePageState extends State<MainProfilePage> {
                 Visibility(
                   visible: backButtonVisible,
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white,),
-
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                    ),
                     tooltip: "Back",
                   ),
                 ),
                 IconButton(
-                  onPressed: () {Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EditProfilePage()),
-                  );},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditProfilePage()),
+                    );
+                  },
                   icon: Stack(
                     children: <Widget>[
-                      Icon(Icons.settings, color: Colors.white,),
+                      Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
                       Visibility(
                         visible: settingsHint,
                         child: new Positioned(
                           top: 0.0,
                           right: 0.0,
-                          child: Icon(Icons.brightness_1, size: 10, color: Colors.redAccent),
+                          child: Icon(Icons.brightness_1,
+                              size: 10, color: Colors.redAccent),
                         ),
                       )
                     ],
@@ -166,16 +170,23 @@ class _MainProfilePageState extends State<MainProfilePage> {
                 ),
                 IconButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MakeFriendsPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MakeFriendsPage()));
                   },
-                  icon: Icon(Icons.search, color: Colors.white,),
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
                   tooltip: "Make Friends",
                 ),
               ],
               backgroundColor: Colors.black,
             ),
             Padding(
-              padding: EdgeInsets.only(top: width* 40/692, left: 20/360, right: 20/360),
+              padding: EdgeInsets.only(
+                  top: width * 40 / 692, left: 20 / 360, right: 20 / 360),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -184,23 +195,14 @@ class _MainProfilePageState extends State<MainProfilePage> {
                     width: 75,
                     decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: NetworkImage(profilePic),
-                            fit: BoxFit.cover
-                        ),
-                        border: Border.all(
-                            color: Colors.black,
-                            width: 2
-                        ),
+                            image: NetworkImage(profilePic), fit: BoxFit.cover),
+                        border: Border.all(color: Colors.black, width: 2),
                         borderRadius: BorderRadius.all(
                           Radius.circular(500),
-                        )
-                    ),
+                        )),
                   ),
                   GestureDetector(
-                    onTap: () {
-
-                    },
-
+                    onTap: () {},
                     child: Container(
                       height: 75,
                       width: 75,
@@ -221,7 +223,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                   fontSize: 14,
                                 ),
                               )
-
                             ],
                           ),
                           Visibility(
@@ -229,7 +230,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             child: new Positioned(
                               top: 0.0,
                               right: 0.0,
-                              child: Icon(Icons.brightness_1, size: 10, color: Colors.redAccent),
+                              child: Icon(Icons.brightness_1,
+                                  size: 10, color: Colors.redAccent),
                             ),
                           )
                         ],
@@ -254,32 +256,30 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             fontSize: 14,
                           ),
                         )
-
                       ],
-
                     ),
                   ),
                 ],
               ),
             ),
             Container(
-              alignment: Alignment.centerLeft,
+                alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height),
+                  padding: EdgeInsets.only(
+                      left: 16 / 360 * width, top: 20 / 692 * height),
                   child: Text(
                     profileName,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold
-                    ),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.left,
                   ),
-                )
-            ),
+                )),
             Container(
-              alignment: Alignment.centerLeft,
+                alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 16/360 * width, top: 20/692 * height, right: 16/360 * width),
+                  padding: EdgeInsets.only(
+                      left: 16 / 360 * width,
+                      top: 20 / 692 * height,
+                      right: 16 / 360 * width),
                   child: Text(
                     profileDesc,
                     style: TextStyle(
@@ -287,8 +287,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                     ),
                     textAlign: TextAlign.left,
                   ),
-                )
-            )
+                ))
           ],
         ),
       );
@@ -299,10 +298,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
           child: Container(
             child: Text(
               "Loading...",
-              style: TextStyle(
-                  fontSize: 36,
-                  fontFamily: 'BungeeInline'
-              ),
+              style: TextStyle(fontSize: 36, fontFamily: 'BungeeInline'),
             ),
           ),
         ),
