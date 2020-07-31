@@ -16,13 +16,17 @@ class _MainProfilePageState extends State<MainProfilePage> {
 
   bool backButtonVisible = false;
   bool settingsHint = false;
+  bool requestsHint = false;
   String profileName, profileDesc, profilePic;
-
-
+  int numFriends;
+  int numRequests;
 
   Future<void>fetchData() async {
+
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
+
+    // getting profile data
     DocumentReference profileDocument = await Firestore.instance.document("users/$uid/data/profileData");
     profileDocument.get().then((datasnapshot) {
      print("data yes");
@@ -30,12 +34,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
      print(datasnapshot.data['name'].toString());
      if (profileName == null || profileDesc == null || profilePic == null) {
        setState(() {
-         if (datasnapshot.data['name'] != null) {
-           profileName = datasnapshot.data['name'].toString();
-         } else {
-           profileName = "Set your name!";
-           settingsHint = true;
-         }
          if (datasnapshot.data['name'] != null) {
            profileName = datasnapshot.data['name'].toString();
          } else {
@@ -69,6 +67,57 @@ class _MainProfilePageState extends State<MainProfilePage> {
        });
      }});
 
+    // getting friends data
+    DocumentReference friendsDocument = await Firestore.instance.document("users/$uid/data/friendsData");
+    QuerySnapshot friends = await Firestore.instance.collection("users/$uid/data/friendsData/friends").getDocuments();
+    QuerySnapshot requests = await Firestore.instance.collection("users/$uid/data/friendsData/requests").getDocuments();
+    List<DocumentSnapshot> friendDocs = friends.documents;
+    List<DocumentSnapshot> requestDocs = requests.documents;
+    friendsDocument.get().then((datasnapshot) {
+      if (datasnapshot.exists) {
+        if (numFriends == null || numRequests == null) {
+          friendsDocument.setData({
+            "numFriends": friendDocs.length,
+            "numRequests": requestDocs.length,
+          }, merge: true);
+          if (datasnapshot.data['numRequests'] == null) {
+            setState(() {
+              numRequests = 0;
+            });
+          }
+          else {
+
+            setState(() {
+              numRequests = datasnapshot.data["numRequests"];
+              if (numRequests != 0) {
+                requestsHint = true;
+              }
+            });
+          }
+          if (datasnapshot.data['numFriends'] == null) {
+            setState(() {
+              numFriends = 0;
+            });
+          }
+          else {
+            setState(() {
+              numFriends = datasnapshot.data['numFriends'];
+            });
+          }
+        }
+      }
+      else {
+        setState(() {
+          numFriends = 0;
+          numRequests = 0;
+        });
+        friendsDocument.setData({
+          "numFriends": friendDocs.length,
+          "numRequests": requestDocs.length,
+        }, merge: true);
+      }
+    });
+    print(requestsHint);
   }
 
   @override
@@ -147,27 +196,44 @@ class _MainProfilePageState extends State<MainProfilePage> {
                         )
                     ),
                   ),
-                  Container(
-                    height: 75,
-                    width: 75,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "127",
-                          style: TextStyle(
-                            fontSize: 24,
-                          ),
-                        ),
-                        Text(
-                          "Friends",
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        )
+                  GestureDetector(
+                    onTap: () {
 
-                      ],
+                    },
 
+                    child: Container(
+                      height: 75,
+                      width: 75,
+                      child: Stack(
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                numFriends.toString(),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                              Text(
+                                "Friends",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                ),
+                              )
+
+                            ],
+                          ),
+                          Visibility(
+                            visible: requestsHint,
+                            child: new Positioned(
+                              top: 0.0,
+                              right: 0.0,
+                              child: Icon(Icons.brightness_1, size: 10, color: Colors.redAccent),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   Container(
@@ -192,7 +258,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                       ],
 
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
