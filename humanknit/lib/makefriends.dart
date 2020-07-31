@@ -133,7 +133,7 @@ class _MakeFriendsPageState extends State<MakeFriendsPage> {
                   ),
                   SingleChildScrollView(
                     child: Container(
-                      height: 450,
+                      height: 430,
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
                         controller: _scrollControl,

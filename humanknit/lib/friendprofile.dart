@@ -39,7 +39,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     counterRequest.get().then((datasnapshot) {counter = datasnapshot;});
     request.get().then((datasnapshot) {
       if (datasnapshot.exists) {
-        if (counter != null) {
+        if (counter.data["from"] == widget.friendUID) {
           showDialog(
               barrierDismissible: false,
               context: context,
@@ -217,7 +217,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         else {
           request.setData({
             "from": uid,
-            "accepted": false,
           }, merge: true);
           showDialog(
               barrierDismissible: false,
@@ -281,6 +280,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   Future<void>fetchData() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = widget.friendUID;
+
     DocumentReference profileDocument = await Firestore.instance.document("users/$uid/data/profileData");
     profileDocument.get().then((datasnapshot) {
       print("data yes");
@@ -330,6 +330,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     friendsDocument.get().then((datasnapshot) {
       if (datasnapshot.exists) {
         if (numFriends == null) {
+          friendsDocument.setData({
+            "numFriends": friendDocs.length,
+            "numRequests": requestDocs.length,
+          }, merge: true);
           if (datasnapshot.data['numFriends'] == null) {
             setState(() {
               numFriends = 0;
