@@ -95,10 +95,10 @@ class _FriendListPageState extends State<FriendListPage> {
     String uid = user.uid;
     DocumentReference request = await Firestore.instance.document("users/$uid/data/friendsData/requests/$requesterUID");
     await request.delete();
-    Firestore.instance.document("users/$uid/data/friendsData/friends/$requesterUID}").setData({
+    await Firestore.instance.document("users/$uid/data/friendsData/friends/$requesterUID}").setData({
       "friend": requesterUID,
     }, merge: true);
-    Firestore.instance.document("users/$requesterUID}/data/friendsData/friends/$uid").setData({
+    await Firestore.instance.document("users/$requesterUID/data/friendsData/friends/$uid").setData({
       "friend": uid,
     }, merge: true);
     setState(() {
