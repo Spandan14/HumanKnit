@@ -48,5 +48,7 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>HumanKnit would like to access your photos.</string>
 </dict>
 </plist>

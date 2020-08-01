@@ -282,7 +282,6 @@ class SearchPageState extends State<SearchPage> {
     if (closed) {
       return;
     }
-
     StringBuffer buffer =
         new StringBuffer("https://www.volunteermatch.org/search/");
     buffer.write("l=" + Uri.encodeComponent("Long+Grove%2C+IL%2C+USA"));
@@ -293,6 +292,8 @@ class SearchPageState extends State<SearchPage> {
         flutterWebviewPlugin
             .evalJavascript("document.documentElement.outerHTML")
             .then((html) {
+          final urlEndings = getStrings(html, "<a data-linktype=\"opp\" href=\"", "\" class=\"link-body-text psr_link\">");
+          print(urlEndings);
           final titles = getStrings(html, ". </span>", "\n");
           final locations = getStrings(html,
               "saddr=Current%20Location&amp;daddr=", "\" target=\"_blank\">");
@@ -306,6 +307,10 @@ class SearchPageState extends State<SearchPage> {
         });
       }
     });
+  }
+
+  void presentDetailsDialog() {
+
   }
 
   List<Widget> getEventChildren(
