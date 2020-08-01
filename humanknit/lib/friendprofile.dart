@@ -26,9 +26,9 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
     QuerySnapshot friends = await Firestore.instance.collection("users/${widget.friendUID}/data/friendsData/friends").getDocuments();
-    List<DocumentSnapshot> friendsList = friends.documents;
+    List<DocumentSnapshot> friendsList = await friends.documents;
     List<String> userfriends = List<String>();
-    friendsList.forEach((friend) {
+    await friendsList.forEach((friend) {
       if (friend.exists) {
         userfriends.add(friend["friend"]);
       }
@@ -36,10 +36,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     DocumentReference request = await Firestore.instance.document("users/${widget.friendUID}/data/friendsData/requests/$uid");
     DocumentReference counterRequest = await Firestore.instance.document("users/$uid/data/friendsData/requests/${widget.friendUID}");
     DocumentSnapshot counter;
-    counterRequest.get().then((datasnapshot) {counter = datasnapshot;});
+    await counterRequest.get().then((datasnapshot) {counter = datasnapshot;});
     request.get().then((datasnapshot) {
       if (datasnapshot.exists) {
-        if (counter.data["from"] == widget.friendUID) {
+        if (counter != null && counter.exists && counter.data["from"] == widget.friendUID) {
           showDialog(
               barrierDismissible: false,
               context: context,
@@ -159,7 +159,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         }
       }
       else {
-        if (friendsList.contains(uid)) {
+        print("frenz");
+        print(userfriends);
+        print(uid);
+        if (userfriends.contains(uid)) {
           showDialog(
               barrierDismissible: false,
               context: context,

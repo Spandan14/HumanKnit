@@ -27,23 +27,23 @@ class _FriendListPageState extends State<FriendListPage> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
     QuerySnapshot friends = await Firestore.instance.collection("users/$uid/data/friendsData/friends").getDocuments();
-    List<DocumentSnapshot> friendDocs = friends.documents;
+    List<DocumentSnapshot> friendDocs = await friends.documents;
     List<String> friendUserPFPS = List<String>();
     List<String> friendUserNames = List<String>();
     List<String> friendUserUsernames = List<String>();
     List<String> friendUserUIDS = List<String>();
-    await friendDocs.forEach((friend) {
-      String currentfriendUID = friend.data["friend"];
-      DocumentReference friendUser = Firestore.instance.document("users/$currentfriendUID/data/profileData");
-      DocumentReference friendUserTwo = Firestore.instance.document("users/$currentfriendUID");
-      friendUser.get().then((datasnapshot) {
-        friendUserPFPS.add(datasnapshot.data["pic"]);
-        friendUserNames.add(datasnapshot.data["name"]);
+    await friendDocs.forEach((friend) async {
+      String currentfriendUID = await friend.data["friend"];
+      DocumentReference friendUser = await Firestore.instance.document("users/$currentfriendUID/data/profileData");
+      DocumentReference friendUserTwo = await Firestore.instance.document("users/$currentfriendUID");
+      await friendUser.get().then((datasnapshot) async {
+        await friendUserPFPS.add(datasnapshot.data["pic"]);
+        await friendUserNames.add(datasnapshot.data["name"]);
       });
-      friendUserTwo.get().then((datasnapshot) {
-        friendUserUsernames.add(datasnapshot.data["name"]);
+      await friendUserTwo.get().then((datasnapshot) async {
+        await friendUserUsernames.add(datasnapshot.data["name"]);
       });
-      friendUserUIDS.add(currentfriendUID);
+      await friendUserUIDS.add(currentfriendUID);
     });
     setState(() {
       _friendUserNames = friendUserNames;
@@ -63,23 +63,23 @@ class _FriendListPageState extends State<FriendListPage> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
     QuerySnapshot requests = await Firestore.instance.collection("users/$uid/data/friendsData/requests").getDocuments();
-    List<DocumentSnapshot> requestDocs = requests.documents;
+    List<DocumentSnapshot> requestDocs = await requests.documents;
     List<String> requestUserPFPS = List<String>();
     List<String> requestUserNames = List<String>();
     List<String> requestUserUsernames = List<String>();
     List<String> requestUserUIDS = List<String>();
     await requestDocs.forEach((request) async {
-      String currentUID = request.data["from"];
+      String currentUID = await request.data["from"];
       DocumentReference requestUser = await Firestore.instance.document("users/$currentUID/data/profileData");
       DocumentReference requestUserTwo = await Firestore.instance.document("users/$currentUID");
-      requestUser.get().then((datasnapshot) {
-        requestUserPFPS.add(datasnapshot.data["pic"].toString());
-        requestUserNames.add(datasnapshot.data["name"]);
+      await requestUser.get().then((datasnapshot) async {
+        await requestUserPFPS.add(datasnapshot.data["pic"].toString());
+        await requestUserNames.add(datasnapshot.data["name"]);
       });
-      requestUserTwo.get().then((datasnapshot) {
-        requestUserUsernames.add(datasnapshot.data["name"]);
+      await requestUserTwo.get().then((datasnapshot) async {
+        await requestUserUsernames.add(datasnapshot.data["name"]);
       });
-      requestUserUIDS.add(currentUID);
+      await requestUserUIDS.add(currentUID);
     });
     setState(() {
       _requestUserNames = requestUserNames;
@@ -90,7 +90,6 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
 
-  bool buttonVis = true;
   acceptFriend(String requesterUID) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
@@ -103,7 +102,6 @@ class _FriendListPageState extends State<FriendListPage> {
       "friend": uid,
     }, merge: true);
     setState(() {
-      buttonVis = false;
     });
   }
 
@@ -113,7 +111,6 @@ class _FriendListPageState extends State<FriendListPage> {
     DocumentReference request = await Firestore.instance.document("users/$uid/data/friendsData/requests/$requesterUID");
     await request.delete();
     setState(() {
-      buttonVis = false;
     });
   }
 
@@ -128,63 +125,47 @@ class _FriendListPageState extends State<FriendListPage> {
     return Container(
       child: Card(
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 8/692 * height, horizontal: 6/360 * width),
-          leading: Row(
-            children: <Widget>[
-              Container(
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(pfp),
-                        fit: BoxFit.cover
-                    ),
-                    border: Border.all(
-                        color: Colors.black,
-                        width: 2
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(500),
-                    )
-                ),
+          contentPadding: EdgeInsets.symmetric(
+              vertical: 8 / 692 * height, horizontal: 6 / 360 * width),
+          leading: Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              image:
+              DecorationImage(image: NetworkImage(pfp), fit: BoxFit.cover),
+              border: Border.all(color: Colors.black, width: 2),
+              borderRadius: BorderRadius.all(
+                Radius.circular(500),
               ),
-              Visibility(
-                visible: buttonVis,
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                      tooltip: "Accept Friend Request",
-                      onPressed: () {
-                        acceptFriend(uid);
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ),
-                      tooltip: "Reject Friend Request",
-                      onPressed: () {
-                        rejectFriend(uid);
-                      },
-                    ),
-                  ],
+            ),
+          ),
+          trailing: Visibility(
+            visible: true,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ),
+                  tooltip: "Accept Friend Request",
+                  onPressed: () {
+                    acceptFriend(uid);
+                  },
                 ),
-              ),
-              Visibility(
-                visible: !buttonVis,
-                child: Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.green,
-                  size: 60,
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: Colors.red,
+                  ),
+                  tooltip: "Reject Friend Request",
+                  onPressed: () {
+                    rejectFriend(uid);
+                  },
                 ),
-              )
-
-            ],
+              ],
+            ),
           ),
           title: Text(
             name,
@@ -242,22 +223,21 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
   }
+
   bool first = true;
   List<bool> isSelected = [true, false];
+  Scaffold page, friends, requests;
+
   @override
   Widget build(BuildContext context) {
     if (first) {
       fetchFriendsData();
-    }
-    if (first) {
       fetchRequestsData();
     }
-    first = false;
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     print("friendspage");
 
-    Scaffold page, friends, requests;
     friends = Scaffold(
       resizeToAvoidBottomInset: true,
       body: Center(
@@ -356,9 +336,12 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
 
-    page = friends;
+    if (first) {
+      page = friends;
+    }
+    first = false;
 
-
+    print(_friendUserUsernames.length);
     try {
       return page;
     } catch (e) {

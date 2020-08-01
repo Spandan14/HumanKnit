@@ -57,7 +57,11 @@ class _MainProfilePageState extends State<MainProfilePage> {
         print("nodoc");
 
         setState(() {
-
+          profileDocument.setData({
+            "name": "Set your name!",
+            "desc": "Set your profile description",
+            "pic": "https://pp.netclipart.com/pp/s/244-2441803_profile-pic-icon-png.png"
+          }, merge: true);
           profileName = "Set your name!";
           profileDesc = "Set your profile description!";
           profilePic =
