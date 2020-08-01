@@ -226,7 +226,7 @@ class _FriendListPageState extends State<FriendListPage> {
 
   bool first = true;
   List<bool> isSelected = [true, false];
-  Scaffold page, friends, requests;
+  Column page, friends, requests;
 
   @override
   Widget build(BuildContext context) {
@@ -238,35 +238,9 @@ class _FriendListPageState extends State<FriendListPage> {
     double height = MediaQuery.of(context).size.height;
     print("friendspage");
 
-    friends = Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Center(
-        child: Column(
+    friends = Column(
           children: <Widget>[
-            AppBar(
-              backgroundColor: Colors.black,
-              actions: <Widget>[
-              ],
-            ),
-            ToggleButtons(
-              children: <Widget>[
-                Icon(Icons.person_outline),
-                Icon(Icons.person_add),
-              ],
-              onPressed: (int index) {
-                setState(() {
-                  if (index == 0) {
-                    isSelected = [true,false];
-                    page = friends;
-                  }
-                  if (index == 1) {
-                    isSelected = [false, true];
-                    page = requests;
-                  }
-                });
-              },
-              isSelected: isSelected,
-            ),
+
             SingleChildScrollView(
               child: Container(
                 height: 430,
@@ -282,39 +256,11 @@ class _FriendListPageState extends State<FriendListPage> {
               ),
             )
           ],
-        ),
-      ),
-    );
+        );
 
-    requests = Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Center(
-        child: Column(
+    requests = Column(
           children: <Widget>[
-            AppBar(
-              backgroundColor: Colors.black,
-              actions: <Widget>[
-              ],
-            ),
-            ToggleButtons(
-              children: <Widget>[
-                Icon(Icons.person_outline),
-                Icon(Icons.person_add),
-              ],
-              onPressed: (int index) {
-                setState(() {
-                  if (index == 0) {
-                    isSelected = [true,false];
-                    page = friends;
-                  }
-                  if (index == 1) {
-                    isSelected = [false, true];
-                    page = requests;
-                  }
-                });
-              },
-              isSelected: isSelected,
-            ),
+
             SingleChildScrollView(
               child: Container(
                 height: 430,
@@ -332,9 +278,7 @@ class _FriendListPageState extends State<FriendListPage> {
               ),
             )
           ],
-        ),
-      ),
-    );
+        );
 
     if (first) {
       page = friends;
@@ -343,7 +287,41 @@ class _FriendListPageState extends State<FriendListPage> {
 
     print(_friendUserUsernames.length);
     try {
-      return page;
+      return Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Center(
+          child: Column(
+            children: <Widget>[
+              AppBar(
+                backgroundColor: Colors.black,
+                actions: <Widget>[
+                ],
+              ),
+
+              ToggleButtons(
+                children: <Widget>[
+                  Icon(Icons.person_outline),
+                  Icon(Icons.person_add),
+                ],
+                onPressed: (int index) {
+                  setState(() {
+                    if (index == 0) {
+                      isSelected = [true,false];
+                      page = friends;
+                    }
+                    if (index == 1) {
+                      isSelected = [false, true];
+                      page = requests;
+                    }
+                  });
+                },
+                isSelected: isSelected,
+              ),
+              page,
+            ],
+          )
+        )
+      );
     } catch (e) {
       print(e);
       return Scaffold(
