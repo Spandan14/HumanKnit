@@ -260,18 +260,18 @@ class SearchPageState extends State<SearchPage> {
             '&keywords=books&location=San+Diego&date=Future');
     final response = await http.get(url);
 
-    final xml = XmlDocument.parse(response.body);
-    final titles = xml.findAllElements("title");
-    final locations = xml.findAllElements("venue_address");
-    final dates = xml.findAllElements("start_time");
+    //final xml = XmlDocument.parse(response.body);
+    //final titles = xml.findAllElements("title");
+    //final locations = xml.findAllElements("venue_address");
+    //final dates = xml.findAllElements("start_time");
 
     var titleStrings = List<String>();
     var locationStrings = List<String>();
     var dateStrings = List<String>();
 
-    titles.forEach((node) => titleStrings.add(node.text));
-    locations.forEach((node) => locationStrings.add(node.text));
-    dates.forEach((node) => dateStrings.add(node.text));
+    //titles.forEach((node) => titleStrings.add(node.text));
+    //locations.forEach((node) => locationStrings.add(node.text));
+    //dates.forEach((node) => dateStrings.add(node.text));
 
     children = getEventChildren(titleStrings, locationStrings, dateStrings);
     closed = true;

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
+import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
 
 class MainProfilePage extends StatefulWidget {
@@ -54,7 +55,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
         }
       } else {
         print("nodoc");
+
         setState(() {
+
           profileName = "Set your name!";
           profileDesc = "Set your profile description!";
           profilePic =
@@ -202,7 +205,12 @@ class _MainProfilePageState extends State<MainProfilePage> {
                         )),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FriendListPage()));
+                    },
                     child: Container(
                       height: 75,
                       width: 75,

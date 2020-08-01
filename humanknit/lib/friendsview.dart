@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,12 +24,6 @@ class _FriendListPageState extends State<FriendListPage> {
   static List<String> _friendUserUIDS = List<String>();
 
   Future<void>fetchFriendsData() async {
-    setState(() {
-      _friendUserPFPS.clear();
-      _friendUserUsernames.clear();
-      _friendUserNames.clear();
-      _friendUserUIDS.clear();
-    });
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
     QuerySnapshot friends = await Firestore.instance.collection("users/$uid/data/friendsData/friends").getDocuments();
@@ -61,18 +54,12 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
 
-    static List<String> _requestUserPFPS = List<String>();
-    static List<String> _requestUserNames = List<String>();
-    static List<String> _requestUserUsernames = List<String>();
-    static List<String> _requestUserUIDS = List<String>();
+  static List<String> _requestUserPFPS = List<String>();
+  static List<String> _requestUserNames = List<String>();
+  static List<String> _requestUserUsernames = List<String>();
+  static List<String> _requestUserUIDS = List<String>();
 
   Future<void>fetchRequestsData() async {
-    setState(() {
-      _requestUserPFPS.clear();
-      _requestUserUsernames.clear();
-      _requestUserNames.clear();
-      _requestUserUIDS.clear();
-    });
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
     QuerySnapshot requests = await Firestore.instance.collection("users/$uid/data/friendsData/requests").getDocuments();
@@ -131,6 +118,7 @@ class _FriendListPageState extends State<FriendListPage> {
   }
 
   getTileRequest(int position) {
+    print("requesttile");
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     String username = _requestUserUsernames[position];
@@ -213,6 +201,7 @@ class _FriendListPageState extends State<FriendListPage> {
 
 
   getTileFriend(int position) {
+    print("friendtile");
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     String username = _friendUserUsernames[position];
@@ -253,16 +242,22 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
   }
-
+  bool first = true;
+  List<bool> isSelected = [true, false];
   @override
   Widget build(BuildContext context) {
+    if (first) {
+      fetchFriendsData();
+    }
+    if (first) {
+      fetchRequestsData();
+    }
+    first = false;
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     print("friendspage");
 
-    List<bool> isSelected = [true,false];
     Scaffold page, friends, requests;
-
     friends = Scaffold(
       resizeToAvoidBottomInset: true,
       body: Center(
@@ -281,9 +276,11 @@ class _FriendListPageState extends State<FriendListPage> {
               onPressed: (int index) {
                 setState(() {
                   if (index == 0) {
+                    isSelected = [true,false];
                     page = friends;
                   }
                   if (index == 1) {
+                    isSelected = [false, true];
                     page = requests;
                   }
                 });
@@ -297,10 +294,10 @@ class _FriendListPageState extends State<FriendListPage> {
                   scrollDirection: Axis.vertical,
                   controller: _scrollControlFriend,
                   shrinkWrap: true,
+                  itemCount: _friendUserUsernames.length,
                   itemBuilder: (BuildContext context, index) {
                     return(getTileFriend(index));
                   },
-                  itemCount: _friendUserUsernames.length,
                 ),
               ),
             )
@@ -327,9 +324,11 @@ class _FriendListPageState extends State<FriendListPage> {
               onPressed: (int index) {
                 setState(() {
                   if (index == 0) {
+                    isSelected = [true,false];
                     page = friends;
                   }
                   if (index == 1) {
+                    isSelected = [false, true];
                     page = requests;
                   }
                 });
@@ -343,10 +342,12 @@ class _FriendListPageState extends State<FriendListPage> {
                   scrollDirection: Axis.vertical,
                   controller: _scrollControlRequest,
                   shrinkWrap: true,
-                  itemBuilder: (BuildContext context, index) {
-                    return(getTileRequest(index));
-                  },
                   itemCount: _requestUserUsernames.length,
+                  itemBuilder: (BuildContext context, index) {
+                    print("hi");
+                    Container tile = getTileRequest(index);
+                    return tile;
+                  },
                 ),
               ),
             )
@@ -355,7 +356,7 @@ class _FriendListPageState extends State<FriendListPage> {
       ),
     );
 
-
+    page = friends;
 
 
     try {
