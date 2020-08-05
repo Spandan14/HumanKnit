@@ -3,6 +3,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 enum EVENT_TYPE {
   VOLUNTEER,
@@ -27,16 +28,20 @@ class SearchPageState extends State<SearchPage> {
   EVENT_TYPE type;
   var title;
   var searchMethod;
-  final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  final nearYouPlugin = new FlutterWebviewPlugin();
+  final searchPlugin = new FlutterWebviewPlugin();
   List<Widget> children;
   var closed = false;
   double screenHeight = 0;
   double screenWidth = 0;
   var selected = [true, false];
+  var searchString = "";
+  var alreadyLoaded = [false, false];
 
   @override
   void dispose() {
-    flutterWebviewPlugin.dispose();
+    nearYouPlugin.dispose();
+    searchPlugin.dispose();
     super.dispose();
   }
 
@@ -48,9 +53,8 @@ class SearchPageState extends State<SearchPage> {
     final toggle = ToggleButtons(
       isSelected: selected,
       onPressed: (int index) {
-        setState(() {
-          onTogglePressed(index);
-        });
+        onTogglePressed(index);
+        setState(() {});
       },
       selectedColor: Color(0xffffffff),
       fillColor: Color(0xfffcba03),
@@ -108,6 +112,16 @@ class SearchPageState extends State<SearchPage> {
     final searchBar = Padding(
       padding: EdgeInsets.only(left: screenWidth / 24, right: screenWidth / 24),
       child: TextField(
+        onEditingComplete: () {
+          FocusScope.of(context).unfocus();
+          closed = false;
+          children = null;
+          searchMethod(true);
+          setState(() {});
+        },
+        onChanged: (String s) {
+          searchString = s;
+        },
         style: TextStyle(
           color: Color(0xffb1b1b1),
         ),
@@ -133,7 +147,7 @@ class SearchPageState extends State<SearchPage> {
       ),
     );
 
-    searchMethod();
+    selected[1] ? searchMethod(true) : searchMethod(false);
 
     return Scaffold(
       backgroundColor: Color(0xff6c7bff),
@@ -201,6 +215,9 @@ class SearchPageState extends State<SearchPage> {
     for (int i = 0; i < selected.length; i++) {
       this.selected[i] = i == index;
     }
+    index == 0 ? alreadyLoaded[0] == false : alreadyLoaded[1] = false;
+    closed = false;
+    children = null;
   }
 
   SearchPageState(EVENT_TYPE t) {
@@ -221,7 +238,7 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  void getVotingEventsList() async {
+  void getVotingEventsList(bool search) async {
     if (closed) {
       return;
     }
@@ -248,7 +265,7 @@ class SearchPageState extends State<SearchPage> {
     setState(() {});
   }
 
-  void getCommunityEventsList() async {
+  void getCommunityEventsList(bool search) async {
     if (closed) {
       return;
     }
@@ -278,40 +295,83 @@ class SearchPageState extends State<SearchPage> {
     setState(() {});
   }
 
-  void getVolunteerEventsList() {
+  void getVolunteerEventsList(bool search) {
     if (closed) {
       return;
     }
-    StringBuffer buffer =
-        new StringBuffer("https://www.volunteermatch.org/search/");
-    buffer.write("l=" + Uri.encodeComponent("Long+Grove%2C+IL%2C+USA"));
+    String url = "https://www.volunteermatch.org/search/";
+    if (search) {
+      url += "?k=" + searchString + "&v=true";
+      searchPlugin.launch(url, hidden: true);
+    } else {
+      url += "l=" + Uri.encodeComponent("Long Grove, IL, USA");
+      nearYouPlugin.launch(url, hidden: true);
+    }
 
-    flutterWebviewPlugin.launch(buffer.toString(), hidden: true);
-    flutterWebviewPlugin.onProgressChanged.listen((progress) async {
-      if (progress == 1) {
-        flutterWebviewPlugin
-            .evalJavascript("document.documentElement.outerHTML")
-            .then((html) {
-          final urlEndings = getStrings(html, "<a data-linktype=\"opp\" href=\"", "\" class=\"link-body-text psr_link\">");
-          print(urlEndings);
-          final titles = getStrings(html, ". </span>", "\n");
-          final locations = getStrings(html,
-              "saddr=Current%20Location&amp;daddr=", "\" target=\"_blank\">");
-          final dates =
-              getStrings(html, "<span class=\"opp_ongoing\">", "</span>");
+    if (!search) {
+      nearYouPlugin.onProgressChanged.listen((progress) async {
+        if (progress == 1 && !alreadyLoaded[0]) {
+          sleep(Duration(seconds: 1));
+          nearYouPlugin
+              .evalJavascript("document.documentElement.outerHTML")
+              .then((html) {
+            final urlEndings = getStrings(
+                html,
+                "<a data-linktype=\"opp\" href=\"",
+                "\" class=\"link-body-text psr_link\">");
+            var titles = List<String>();
+            var locations = List<String>();
 
-          children = getEventChildren(titles, locations, dates);
-          flutterWebviewPlugin.close();
-          closed = true;
-          setState(() {});
-        });
-      }
-    });
+            titles = getStrings(html, ". </span>", "\n");
+            locations = getStrings(html, "saddr=Current%20Location&amp;daddr=",
+                "\" target=\"_blank\">");
+            final dates =
+                getStrings(html, "<span class=\"opp_ongoing\">", "</span>");
+
+            children = getEventChildren(titles, locations, dates);
+            alreadyLoaded[0] = true;
+            nearYouPlugin.close();
+            closed = true;
+            setState(() {});
+          });
+        }
+      });
+    } else {
+      searchPlugin.onProgressChanged.listen((progress) async {
+        if (progress == 1 && !alreadyLoaded[1]) {
+          sleep(Duration(seconds: 1));
+
+          searchPlugin
+              .evalJavascript("document.documentElement.outerHTML")
+              .then((html) {
+            final urlEndings = getStrings(
+                html,
+                "<a data-linktype=\"opp\" href=\"",
+                "\" class=\"link-body-text psr_link\">");
+            var titles = List<String>();
+            var locations = List<String>();
+
+            titles = getStrings(
+                html,
+                "class=\"link-body-text pub-srp-opps__title ga-track-to-opp-details\">",
+                "</a>");
+            locations =
+                getStrings(html, "<div class=\"pub-srp-opps__loc\">", "</div>");
+            final dates =
+                getStrings(html, "<span class=\"opp_ongoing\">", "</span>");
+
+            children = getEventChildren(titles, locations, dates);
+            alreadyLoaded[1] = true;
+            searchPlugin.close();
+            closed = true;
+            setState(() {});
+          });
+        }
+      });
+    }
   }
 
-  void presentDetailsDialog() {
-
-  }
+  void presentDetailsDialog(String date, String url) {}
 
   List<Widget> getEventChildren(
       List<String> titles, List<String> locations, List<String> dates) {
