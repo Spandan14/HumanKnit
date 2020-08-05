@@ -39,70 +39,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     await counterRequest.get().then((datasnapshot) {counter = datasnapshot;});
     request.get().then((datasnapshot) {
       if (datasnapshot.exists) {
-        if (counter != null && counter.exists && counter.data["from"] == widget.friendUID) {
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (BuildContext context) {
-                return Theme(
-                  data: ThemeData (
-                      fontFamily: 'BungeeInline'
-                  ),
-                  child: AlertDialog (
-                    backgroundColor: Color(0xfffeefb3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(20.0)),
-                    ),
-                    title: Text(
-                      'Friend Request',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xff875053),
-                      ),
-                    ),
-                    content: Column (
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Since you have both sent each other friend requests, you are now friends",
-                          style: TextStyle(
-                            color: Color(0xffaa767c),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Row (
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                child: Text(
-                                  'OK',
-                                  style: TextStyle(
-                                    color: Color(0xff875053),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ]
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-          );
-          request.delete();
-          counterRequest.delete();
-          Firestore.instance.document("users/$uid/data/friendsData/friends/${widget.friendUID}").setData({
-            "friend": widget.friendUID,
-          }, merge: true);
-          Firestore.instance.document("users/${widget.friendUID}/data/friendsData/friends/$uid").setData({
-            "friend": uid,
-          }, merge: true);
-        }
-        else {
+
           showDialog(
               barrierDismissible: false,
               context: context,
@@ -157,7 +94,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               }
           );
         }
-      }
       else {
         print("frenz");
         print(userfriends);
@@ -274,7 +210,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                 );
               }
           );
-          sendFriendRequest();
         }
         }
       });
