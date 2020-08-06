@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:xml/xml.dart';
+import 'package:xml_parser/xml_parser.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
@@ -113,7 +113,6 @@ class SearchPageState extends State<SearchPage> {
           FocusScope.of(context).unfocus();
           closed = false;
           children = null;
-          searchMethod(true);
           setState(() {});
         },
         onChanged: (String s) {
@@ -266,25 +265,28 @@ class SearchPageState extends State<SearchPage> {
       return;
     }
 
+    final str = !search ? "" : searchString;
     final appKey = "R83whdM3ZPbzHzRf";
     final url = Uri.parse(
         'http://api.eventful.com/rest/events/search?app_key=' +
             appKey +
-            '&keywords=books&location=San+Diego&date=Future');
+            '&q=$str&date=Future');
     final response = await http.get(url);
 
-    //final xml = XmlDocument.parse(response.body);
-    //final titles = xml.findAllElements("title");
-    //final locations = xml.findAllElements("venue_address");
-    //final dates = xml.findAllElements("start_time");
+    final xml = XmlDocument.fromString(response.body);
+    final titleElements = xml.getElementsWhere(name: 'title');
+    final locationElements = xml.getElementsWhere(name: 'venue_address');
+    final dateElements = xml.getElementsWhere(name: 'start_time');
 
     var titleStrings = List<String>();
     var locationStrings = List<String>();
     var dateStrings = List<String>();
 
-    //titles.forEach((node) => titleStrings.add(node.text));
-    //locations.forEach((node) => locationStrings.add(node.text));
-    //dates.forEach((node) => dateStrings.add(node.text));
+    titleElements.forEach((node) => titleStrings.add(node.text));
+    locationElements.forEach((node) {
+      locationStrings.add(node.text ?? "");
+    });
+    dateElements.forEach((node) => dateStrings.add(node.text));
 
     children = getEventChildren(titleStrings, locationStrings, dateStrings);
     closed = true;
