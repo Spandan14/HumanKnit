@@ -50,5 +50,13 @@
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>HumanKnit would like to access your photos.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>HumanKnit would like to use your location to improve search accuracy.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>HumanKnit would like to use your location to improve search accuracy.</string>
+
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>HumanKnit would like to use your location to improve search accuracy.</string>
 </dict>
 </plist>
