@@ -28,6 +28,11 @@ dependencies:
   cloud_firestore: ^0.13.7
   path_provider: ^1.6.11
   shared_preferences: ^0.5.8
+  flutter_webview_plugin:
+  image_picker: ^0.6.0+17
+  firebase_storage: ^3.0.3
+  xml:
+  xml_parser:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -50,7 +55,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - assets/images/
+    - assets/images/
+    - assets/javascript/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -67,7 +73,7 @@ flutter:
   fonts:
     - family: BungeeInline
       fonts:
-        - asset: fonts/BungeeInline-Regular.ttf
+        - asset: fonts/Bungee-LowercaseCustomized.otf
   # fonts:
   #   - family: Schyler
   #     fonts:
