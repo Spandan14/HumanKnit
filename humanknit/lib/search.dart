@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:universal_html/html.dart' as html;
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
 
 enum EVENT_TYPE {
   VOLUNTEER,
@@ -36,6 +37,8 @@ class SearchPageState extends State<SearchPage> {
   double screenWidth = 0;
   var selected = [true, false];
   var searchString = "";
+  Placemark location;
+  var gotLocation = false;
 
   @override
   void dispose() {
@@ -268,10 +271,16 @@ class SearchPageState extends State<SearchPage> {
 
     final str = !search ? "" : searchString;
     final appKey = "R83whdM3ZPbzHzRf";
-    final url = Uri.parse(
-        'http://api.eventful.com/rest/events/search?app_key=' +
+    var url = 'http://api.eventful.com/rest/events/search?app_key=' +
             appKey +
-            '&q=$str&date=Future');
+            '&q=$str&date=Future';
+    if (!search) {
+      if (!gotLocation) {
+        location = await getUserLocation();
+        gotLocation = true;
+      }
+      url += "?l=" + Uri.encodeComponent(location.postalCode.toString());
+    }
     final response = await http.get(url);
 
     final xml = XmlDocument.fromString(response.body);
@@ -294,15 +303,36 @@ class SearchPageState extends State<SearchPage> {
     setState(() {});
   }
 
-  void getVolunteerEventsList(bool search) {
+  Future<Placemark> getUserLocation() async {
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+    final currentPos = await geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
+
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          currentPos.latitude, currentPos.longitude);
+
+      return p[0];
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void getVolunteerEventsList(bool search) async {
     if (closed) {
       return;
     }
+
     String url = "https://www.volunteermatch.org/search/";
     if (search) {
       url += "?k=" + searchString + "&v=true";
     } else {
-      url += "l=" + Uri.encodeComponent("Long Grove, IL, USA");
+      if (!gotLocation) {
+        location = await getUserLocation();
+        gotLocation = true;
+      }
+      url += "?l=" + Uri.encodeComponent(location.locality.toString());
     }
 
     flutterWebviewPlugin.launch(url, hidden: true);
@@ -319,18 +349,13 @@ class SearchPageState extends State<SearchPage> {
           var titles = List<String>();
           var locations = List<String>();
 
-          if (!search) {
-            titles = getStrings(value, ". </span>", "\n");
-            locations = getStrings(value, "saddr=Current%20Location&amp;daddr=",
-                "\" target=\"_blank\">");
-          } else {
-            titles = getStrings(
-                value,
-                "class=\"link-body-text pub-srp-opps__title ga-track-to-opp-details\">\n                      ",
-                "</a>");
-            locations = getStrings(
-                value, "<div class=\"pub-srp-opps__loc\">", "</div>");
-          }
+          titles = getStrings(
+              value,
+              "class=\"link-body-text pub-srp-opps__title ga-track-to-opp-details\">\n                      ",
+              "</a>");
+          locations =
+              getStrings(value, "<div class=\"pub-srp-opps__loc\">", "</div>");
+
           final dates =
           getStrings(value, "<span class=\"opp_ongoing\">", "</span>");
 
