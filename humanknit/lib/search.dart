@@ -1,10 +1,10 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:xml_parser/xml_parser.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:universal_html/html.dart' as html;
+import 'package:http/http.dart' as http;
 
 enum EVENT_TYPE {
   VOLUNTEER,
