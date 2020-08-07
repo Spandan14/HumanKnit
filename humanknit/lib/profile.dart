@@ -149,6 +149,14 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   ),
                 ),
                 IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.add_box,
+                    color: Colors.white,
+                  ),
+                  tooltip: "Add a post",
+                ),
+                IconButton(
                   onPressed: () {
                     Navigator.push(
                       context,
