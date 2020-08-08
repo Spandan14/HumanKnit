@@ -6,6 +6,8 @@ import 'package:humanknit/editprofile.dart';
 import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
 
+import 'addpost.dart';
+
 class MainProfilePage extends StatefulWidget {
   @override
   _MainProfilePageState createState() => _MainProfilePageState();
@@ -149,7 +151,13 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PostAdd()),
+                    );
+                  },
                   icon: Icon(
                     Icons.add_box,
                     color: Colors.white,
