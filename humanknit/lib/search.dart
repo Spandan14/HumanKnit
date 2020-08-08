@@ -39,6 +39,9 @@ class SearchPageState extends State<SearchPage> {
   var searchString = "";
   Placemark location;
   var gotLocation = false;
+  var advancedSearchPressed = false;
+  List<bool> advancedSearchValues;
+  List<Widget> advancedSearchOptions;
 
   @override
   void dispose() {
@@ -147,6 +150,31 @@ class SearchPageState extends State<SearchPage> {
       ),
     );
 
+    final advancedSearch = RaisedButton(
+      color: Color(0xfffcba03),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(1000),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(screenWidth / 48),
+        child: Text(
+          "Advanced Search",
+          style: TextStyle(
+            fontSize: 24 / 896 * screenHeight,
+          ),
+        ),
+      ),
+      onPressed: () => setState(() {
+        advancedSearchPressed = !advancedSearchPressed;
+      }),
+    );
+
+    if (advancedSearchPressed) {
+      showAdvancedSearchOptions();
+    } else {
+      advancedSearchOptions = null;
+    }
+
     selected[1] ? searchMethod(true) : searchMethod(false);
 
     return Scaffold(
@@ -177,7 +205,17 @@ class SearchPageState extends State<SearchPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                selected[0] ? SizedBox(height: 0) : searchBar,
+                selected[0] ? SizedBox(height: 0) : Flexible(child: searchBar),
+                selected[0] ? SizedBox(height: 0) : Flexible(child: advancedSearch),
+                (selected[1] && advancedSearchPressed)
+                    ? Padding(
+                        padding: EdgeInsets.only(
+                          left: screenWidth / 6,
+                          right: screenWidth / 6,
+                        ),
+                        child: Column(children: advancedSearchOptions),
+                      )
+                    : SizedBox(height: 0),
                 Flexible(
                   flex: 3,
                   child: Container(
@@ -225,6 +263,7 @@ class SearchPageState extends State<SearchPage> {
       case EVENT_TYPE.VOLUNTEER:
         title = "Volunteering Events";
         searchMethod = getVolunteerEventsList;
+        advancedSearchValues = [true, false];
         break;
       case EVENT_TYPE.VOTE:
         title = "Voting Events";
@@ -235,6 +274,109 @@ class SearchPageState extends State<SearchPage> {
         searchMethod = getCommunityEventsList;
         break;
     }
+  }
+
+  void showAdvancedSearchOptions() {
+    switch (type) {
+      case EVENT_TYPE.VOLUNTEER:
+        advancedSearchOptions = [
+          CheckboxListTile(
+            title: Text(
+              "Virtual",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[0],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) {
+              setState(() {
+                advancedSearchValues[0] = value;
+                advancedSearchValues[1] = !value;
+              });
+            },
+          ),
+          Divider(
+            color: Color(0xffffffff),
+          ),
+          CheckboxListTile(
+            title: Text(
+              "Location",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[1],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) {
+              setState(() {
+                advancedSearchValues[1] = value;
+                advancedSearchValues[0] = !value;
+              });
+            },
+          ),
+          advancedSearchValues[1]
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Flexible(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          fillColor: Color(0xffffffff),
+                          filled: true,
+                          hintText: "City",
+                          hintStyle: TextStyle(
+                            fontSize: 18 / 896 * screenHeight,
+                            color: Color(0xffb1b1b1),
+                          ),
+                          prefixIcon: Transform.scale(
+                            scale: 0.2,
+                            child: ImageIcon(
+                              AssetImage("assets/images/location.png"),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(color: Color(0xffb1b1b1)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    VerticalDivider(),
+                    Flexible(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          fillColor: Color(0xffffffff),
+                          filled: true,
+                          hintText: "State",
+                          hintStyle: TextStyle(
+                            fontSize: 18 / 896 * screenHeight,
+                            color: Color(0xffb1b1b1),
+                          ),
+                          prefixIcon: Transform.scale(
+                            scale: 0.2,
+                            child: ImageIcon(
+                              AssetImage("assets/images/location.png"),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(color: Color(0xffb1b1b1)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox(height: 0),
+        ];
+        break;
+      case EVENT_TYPE.VOTE:
+        break;
+      case EVENT_TYPE.COMMUNITY:
+        break;
+    }
+    setState(() {});
   }
 
   void getVotingEventsList(bool search) async {
@@ -272,8 +414,8 @@ class SearchPageState extends State<SearchPage> {
     final str = !search ? "" : searchString;
     final appKey = "R83whdM3ZPbzHzRf";
     var url = 'http://api.eventful.com/rest/events/search?app_key=' +
-            appKey +
-            '&q=$str&date=Future';
+        appKey +
+        '&q=$str&date=Future';
     if (!search) {
       if (!gotLocation) {
         location = await getUserLocation();
@@ -357,7 +499,7 @@ class SearchPageState extends State<SearchPage> {
               getStrings(value, "<div class=\"pub-srp-opps__loc\">", "</div>");
 
           final dates =
-          getStrings(value, "<span class=\"opp_ongoing\">", "</span>");
+              getStrings(value, "<span class=\"opp_ongoing\">", "</span>");
 
           children = getEventChildren(titles, locations, dates);
           closed = true;
