@@ -27,6 +27,7 @@ class _PostAddState extends State<PostAdd> {
   static final _postKey = GlobalKey<FormState>();
 
   final TextEditingController _caption = TextEditingController();
+  final TextEditingController _location = TextEditingController();
 
   Future chooseImage() async {
     var _image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -63,6 +64,22 @@ class _PostAddState extends State<PostAdd> {
         selectedDate = picked;
       });
   }
+
+  setData() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    var id = new DateTime.now().millisecondsSinceEpoch;
+    print(_selectedType);
+    DocumentReference postDoc = Firestore.instance.document("users/$uid/data/postsData/posts/${id.toString()}");
+    await postDoc.setData({
+      "date": selectedDate,
+      "type": _selectedType,
+      "caption": _caption.text,
+      "pic": _uploadedFileURL,
+      "location": _location.text
+    }, merge: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -104,7 +121,7 @@ class _PostAddState extends State<PostAdd> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 20/692 * height),
+                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 10/692 * height),
                     child: Container(
                       child: DropdownButtonFormField(
                         validator: (_selectedType) {
@@ -116,12 +133,16 @@ class _PostAddState extends State<PostAdd> {
                         hint: Text("Event Type"),
                         value: _selectedType,
                         items: <String>['Volunteering Event', 'Election', 'Community Event'].map((String value) {
+                          setState(() {
+                            _selectedType = value;
+                          });
                           return new DropdownMenuItem<String>(
                             value: value,
                             child: new Text(value),
                           );
                         }).toList(),
-                        onChanged: (_) {},
+                        onChanged: (_) {
+                        },
                         decoration: InputDecoration(
                           errorStyle: TextStyle(fontSize: 8),
                         ),
@@ -130,7 +151,7 @@ class _PostAddState extends State<PostAdd> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 20/692 * height),
+                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 10/692 * height),
                     child: Container(
                         child: TextFormField(
                           controller: _caption,
@@ -193,10 +214,10 @@ class _PostAddState extends State<PostAdd> {
                   )
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 20/692 * height),
+                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 10/692 * height),
                     child: Container(
                         child: TextFormField(
-                          controller: _caption,
+                          controller: _location,
                           validator: (value) {
                             if (value.isEmpty) {
                               return "Please enter a location";
@@ -225,7 +246,7 @@ class _PostAddState extends State<PostAdd> {
                   ),
                   Container(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 40/692 * height, left: 40/360 * width, right: 40/360 * width),
+                        padding: EdgeInsets.only(top: 10/692 * height, left: 40/360 * width, right: 40/360 * width),
                         child: RaisedButton(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(100),
@@ -233,7 +254,7 @@ class _PostAddState extends State<PostAdd> {
                             color: Color.fromRGBO(252, 186, 3, 1),
                             onPressed: () {
                               if (_postKey.currentState.validate()) {
-
+                                setData();
                                 Navigator.of(context).pop();
                               }
                             },

@@ -122,6 +122,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
           "numFriends": friendDocs.length,
           "numRequests": requestDocs.length,
         }, merge: true);
+        Firestore.instance.document("users/$uid/data/postsData");
       }
     });
     print(requestsHint);
