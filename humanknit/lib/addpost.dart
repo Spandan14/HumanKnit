@@ -70,9 +70,11 @@ class _PostAddState extends State<PostAdd> {
     var uid = user.uid;
     var id = new DateTime.now().millisecondsSinceEpoch;
     print(_selectedType);
+    await Firestore.instance.document("users/$uid/data/postsData").setData({"exists": true}, merge: true);
     DocumentReference postDoc = Firestore.instance.document("users/$uid/data/postsData/posts/${id.toString()}");
+    print(selectedDate);
     await postDoc.setData({
-      "date": selectedDate.toString().substring(0, selectedDate.toString().indexOf('at')),
+      "date": selectedDate.toString().substring(0, selectedDate.toString().indexOf(' ')),
       "type": _selectedType,
       "caption": _caption.text,
       "pic": _uploadedFileURL,
