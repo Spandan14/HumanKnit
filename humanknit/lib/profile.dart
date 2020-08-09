@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
 import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
+import 'package:humanknit/stats.dart';
 
 import 'addpost.dart';
 
@@ -150,6 +151,20 @@ class _MainProfilePageState extends State<MainProfilePage> {
                     ),
                     tooltip: "Back",
                   ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StatsPage()),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.assessment,
+                    color: Colors.white,
+                  ),
+                  tooltip: "Statistics",
                 ),
                 IconButton(
                   onPressed: () {
