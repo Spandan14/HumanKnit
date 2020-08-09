@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:humanknit/userstats.dart';
-import 'package:humanknit/friends.dart';
+import 'package:humanknit/posts.dart';
 import 'package:humanknit/experiences.dart';
 import 'package:humanknit/settings.dart';
 import 'package:humanknit/theme.dart';
@@ -42,7 +42,7 @@ class _NavigationState extends State<Navigation> {
     ];
     final List<Widget> children = [
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
-      Padding(padding: EdgeInsets.all(10), child: FriendsPage()),
+      Padding(padding: EdgeInsets.all(10), child: PostsPage()),
       Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];

@@ -72,11 +72,13 @@ class _PostAddState extends State<PostAdd> {
     print(_selectedType);
     DocumentReference postDoc = Firestore.instance.document("users/$uid/data/postsData/posts/${id.toString()}");
     await postDoc.setData({
-      "date": selectedDate,
+      "date": selectedDate.toString().substring(0, selectedDate.toString().indexOf('at')),
       "type": _selectedType,
       "caption": _caption.text,
       "pic": _uploadedFileURL,
-      "location": _location.text
+      "location": _location.text,
+      "likes": 0,
+      "verifies": 0,
     }, merge: true);
   }
 
