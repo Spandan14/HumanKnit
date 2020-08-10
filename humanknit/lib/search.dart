@@ -39,6 +39,8 @@ class SearchPageState extends State<SearchPage> {
   Placemark location;
   var gotLocation = false;
   var advancedSearchPressed = false;
+  var advancedSearchTFValues;
+  var searchLocationStr = "";
   final eventfulAppKey = "R83whdM3ZPbzHzRf";
   List<String> eventfulCategoryTitles;
   List<String> eventfulCategoryIDs;
@@ -269,6 +271,7 @@ class SearchPageState extends State<SearchPage> {
         title = "Volunteering Events";
         searchMethod = getVolunteerEventsList;
         advancedSearchValues = [true, false];
+        advancedSearchTFValues = ["", ""];
         break;
       case EVENT_TYPE.VOTE:
         title = "Voting Events";
@@ -278,6 +281,7 @@ class SearchPageState extends State<SearchPage> {
         title = "Community Events";
         searchMethod = getCommunityEventsList;
         advancedSearchValues = [false, false];
+        advancedSearchTFValues = [""];
         if (eventfulCategoryTitles == null || eventfulCategoryIDs == null) {
           getCommunityEventCategories();
         }
@@ -300,6 +304,8 @@ class SearchPageState extends State<SearchPage> {
             activeColor: Color(0xfffcba03),
             onChanged: (bool value) {
               setState(() {
+                children = null;
+                closed = false;
                 advancedSearchValues[0] = value;
                 advancedSearchValues[1] = !value;
               });
@@ -318,6 +324,8 @@ class SearchPageState extends State<SearchPage> {
             value: advancedSearchValues[1],
             activeColor: Color(0xfffcba03),
             onChanged: (bool value) {
+              children = null;
+              closed = false;
               setState(() {
                 advancedSearchValues[1] = value;
                 advancedSearchValues[0] = !value;
@@ -330,6 +338,16 @@ class SearchPageState extends State<SearchPage> {
                   children: [
                     Flexible(
                       child: TextField(
+                        onEditingComplete: () {
+                          FocusScope.of(context).unfocus();
+                          setSearchStr();
+                          children = null;
+                          closed = false;
+                          setState(() {});
+                        },
+                        onChanged: (value) {
+                          advancedSearchTFValues[0] = value;
+                        },
                         decoration: InputDecoration(
                           fillColor: Color(0xffffffff),
                           filled: true,
@@ -354,6 +372,16 @@ class SearchPageState extends State<SearchPage> {
                     VerticalDivider(),
                     Flexible(
                       child: TextField(
+                        onEditingComplete: () {
+                          FocusScope.of(context).unfocus();
+                          setSearchStr();
+                          children = null;
+                          closed = false;
+                          setState(() {});
+                        },
+                        onChanged: (value) {
+                          advancedSearchTFValues[1] = value;
+                        },
                         decoration: InputDecoration(
                           fillColor: Color(0xffffffff),
                           filled: true,
@@ -399,27 +427,29 @@ class SearchPageState extends State<SearchPage> {
               });
             },
           ),
-          advancedSearchValues[0] ? TextField(
-            decoration: InputDecoration(
-              fillColor: Color(0xffffffff),
-              filled: true,
-              hintText: "Zip Code",
-              hintStyle: TextStyle(
-                fontSize: 18 / 896 * screenHeight,
-                color: Color(0xffb1b1b1),
-              ),
-              prefixIcon: Transform.scale(
-                scale: 0.2,
-                child: ImageIcon(
-                  AssetImage("assets/images/location.png"),
-                ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                borderSide: BorderSide(color: Color(0xffb1b1b1)),
-              ),
-            ),
-          ) : SizedBox(height: 0),
+          advancedSearchValues[0]
+              ? TextField(
+                  decoration: InputDecoration(
+                    fillColor: Color(0xffffffff),
+                    filled: true,
+                    hintText: "Zip Code",
+                    hintStyle: TextStyle(
+                      fontSize: 18 / 896 * screenHeight,
+                      color: Color(0xffb1b1b1),
+                    ),
+                    prefixIcon: Transform.scale(
+                      scale: 0.2,
+                      child: ImageIcon(
+                        AssetImage("assets/images/location.png"),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderSide: BorderSide(color: Color(0xffb1b1b1)),
+                    ),
+                  ),
+                )
+              : SizedBox(height: 0),
           Divider(
             color: Color(0xffffffff),
           ),
@@ -441,6 +471,12 @@ class SearchPageState extends State<SearchPage> {
         break;
     }
     setState(() {});
+  }
+
+  void setSearchStr() {
+    searchLocationStr = advancedSearchTFValues[0].isEmpty
+        ? advancedSearchTFValues[1]
+        : "${advancedSearchTFValues[0]}, ${advancedSearchTFValues[1]}";
   }
 
   void getCommunityEventCategories() async {
@@ -521,8 +557,10 @@ class SearchPageState extends State<SearchPage> {
                               style: TextStyle(color: Color(0xff6c7bff)),
                             ),
                             onPressed: () {
-                              advancedSearchValues[1] = eventfulCategoriesSelected.contains(true);
+                              advancedSearchValues[1] =
+                                  eventfulCategoriesSelected.contains(true);
                               Navigator.of(context).pop();
+                              setState(() {});
                             },
                           ),
                           FlatButton(
@@ -639,7 +677,16 @@ class SearchPageState extends State<SearchPage> {
 
     String url = "https://www.volunteermatch.org/search/";
     if (search) {
-      url += "?k=" + searchString + "&v=true";
+      if (advancedSearchPressed) {
+        url += "?k=" + searchString;
+        if (advancedSearchValues[0]) {
+          url += "&v=true";
+        } else {
+          url += "&l=" + Uri.encodeComponent(searchLocationStr);
+        }
+      } else {
+        url += "&v=true";
+      }
     } else {
       if (!gotLocation) {
         location = await getUserLocation();
