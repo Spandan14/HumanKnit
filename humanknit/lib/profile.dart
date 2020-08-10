@@ -21,7 +21,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
   String profileName, profileDesc, profilePic;
   int numFriends;
   int numRequests;
-
+  int numPosts;
   Future<void> fetchData() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
@@ -125,6 +125,11 @@ class _MainProfilePageState extends State<MainProfilePage> {
         }, merge: true);
         Firestore.instance.document("users/$uid/data/postsData");
       }
+    });
+    QuerySnapshot postsDocs = await Firestore.instance.collection("users/$uid/data/postsData/posts").getDocuments();
+    List<DocumentSnapshot> posts = await postsDocs.documents;
+    setState(() {
+      numPosts = posts.length;
     });
     print(requestsHint);
   }
@@ -289,7 +294,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "12",
+                          numPosts.toString(),
                           style: TextStyle(
                             fontSize: 24,
                           ),
