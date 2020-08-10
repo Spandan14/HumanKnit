@@ -3,7 +3,6 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:xml_parser/xml_parser.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:universal_html/html.dart' as html;
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 
@@ -40,6 +39,10 @@ class SearchPageState extends State<SearchPage> {
   Placemark location;
   var gotLocation = false;
   var advancedSearchPressed = false;
+  final eventfulAppKey = "R83whdM3ZPbzHzRf";
+  List<String> eventfulCategoryTitles;
+  List<String> eventfulCategoryIDs;
+  List<bool> eventfulCategoriesSelected;
   List<bool> advancedSearchValues;
   List<Widget> advancedSearchOptions;
 
@@ -206,7 +209,9 @@ class SearchPageState extends State<SearchPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 selected[0] ? SizedBox(height: 0) : Flexible(child: searchBar),
-                selected[0] ? SizedBox(height: 0) : Flexible(child: advancedSearch),
+                selected[0]
+                    ? SizedBox(height: 0)
+                    : Flexible(child: advancedSearch),
                 (selected[1] && advancedSearchPressed)
                     ? Padding(
                         padding: EdgeInsets.only(
@@ -272,6 +277,10 @@ class SearchPageState extends State<SearchPage> {
       case EVENT_TYPE.COMMUNITY:
         title = "Community Events";
         searchMethod = getCommunityEventsList;
+        advancedSearchValues = [false, false];
+        if (eventfulCategoryTitles == null || eventfulCategoryIDs == null) {
+          getCommunityEventCategories();
+        }
         break;
     }
   }
@@ -374,9 +383,170 @@ class SearchPageState extends State<SearchPage> {
       case EVENT_TYPE.VOTE:
         break;
       case EVENT_TYPE.COMMUNITY:
+        advancedSearchOptions = [
+          CheckboxListTile(
+            title: Text(
+              "Location",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[0],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) {
+              setState(() {
+                advancedSearchValues[0] = value;
+              });
+            },
+          ),
+          advancedSearchValues[0] ? TextField(
+            decoration: InputDecoration(
+              fillColor: Color(0xffffffff),
+              filled: true,
+              hintText: "Zip Code",
+              hintStyle: TextStyle(
+                fontSize: 18 / 896 * screenHeight,
+                color: Color(0xffb1b1b1),
+              ),
+              prefixIcon: Transform.scale(
+                scale: 0.2,
+                child: ImageIcon(
+                  AssetImage("assets/images/location.png"),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                borderSide: BorderSide(color: Color(0xffb1b1b1)),
+              ),
+            ),
+          ) : SizedBox(height: 0),
+          Divider(
+            color: Color(0xffffffff),
+          ),
+          CheckboxListTile(
+            title: Text(
+              "Category",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[1],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) async {
+              presentCategoryDialog();
+              setState(() {});
+            },
+          ),
+        ];
         break;
     }
     setState(() {});
+  }
+
+  void getCommunityEventCategories() async {
+    final url =
+        "http://api.eventful.com/rest/categories/list?app_key=$eventfulAppKey";
+
+    final response = await http.get(url);
+
+    final xml = XmlDocument.fromString(response.body);
+    final titleElements = xml.getElementsWhere(name: 'name');
+    final idElements = xml.getElementsWhere(name: 'id');
+
+    eventfulCategoryTitles = List<String>();
+    eventfulCategoryIDs = List<String>();
+    eventfulCategoriesSelected = List<bool>();
+
+    titleElements.forEach((node) => eventfulCategoryTitles.add(node.text));
+    idElements.forEach((node) => eventfulCategoryIDs.add(node.text));
+    for (int i = 0; i < eventfulCategoryTitles.length; i++) {
+      eventfulCategoriesSelected.add(false);
+    }
+  }
+
+  void presentCategoryDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Theme(
+          data: ThemeData(fontFamily: "BungeeInline"),
+          child: AlertDialog(
+            backgroundColor: Color(0xfffcba03),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Text(
+              'Choose Event Categories',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xff000000),
+              ),
+            ),
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Container(
+                  width: double.maxFinite,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: eventfulCategoryTitles.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return CheckboxListTile(
+                              title: Text(
+                                eventfulCategoryTitles[index],
+                                style: TextStyle(
+                                  fontSize: 36 / 896 * screenHeight,
+                                ),
+                              ),
+                              value: eventfulCategoriesSelected[index],
+                              activeColor: Color(0xfffcba03),
+                              onChanged: (bool value) {
+                                setState(() {
+                                  eventfulCategoriesSelected[index] = value;
+                                });
+                              },
+                            );
+                          },
+                          shrinkWrap: true,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FlatButton(
+                            child: Text(
+                              'Save',
+                              style: TextStyle(color: Color(0xff6c7bff)),
+                            ),
+                            onPressed: () {
+                              advancedSearchValues[1] = eventfulCategoriesSelected.contains(true);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          FlatButton(
+                            child: Text(
+                              'Close',
+                              style: TextStyle(
+                                color: Color(0xff6c7bff),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void getVotingEventsList(bool search) async {
@@ -411,18 +581,19 @@ class SearchPageState extends State<SearchPage> {
       return;
     }
 
-    final str = !search ? "" : searchString;
-    final appKey = "R83whdM3ZPbzHzRf";
     var url = 'http://api.eventful.com/rest/events/search?app_key=' +
-        appKey +
-        '&q=$str&date=Future';
+        eventfulAppKey +
+        '&date=Future';
     if (!search) {
       if (!gotLocation) {
         location = await getUserLocation();
         gotLocation = true;
       }
-      url += "?l=" + Uri.encodeComponent(location.postalCode.toString());
+      url += "&l=" + Uri.encodeComponent(location.postalCode.toString());
+    } else {
+      url += "q=$searchString";
     }
+
     final response = await http.get(url);
 
     final xml = XmlDocument.fromString(response.body);
