@@ -44,9 +44,10 @@ class SearchPageState extends State<SearchPage> {
   final eventfulAppKey = "R83whdM3ZPbzHzRf";
   List<String> eventfulCategoryTitles;
   List<String> eventfulCategoryIDs;
+  List<String> eventfulCategoryIDsSelected;
+  List<Widget> advancedSearchOptions;
   List<bool> eventfulCategoriesSelected;
   List<bool> advancedSearchValues;
-  List<Widget> advancedSearchOptions;
 
   @override
   void dispose() {
@@ -429,6 +430,15 @@ class SearchPageState extends State<SearchPage> {
           ),
           advancedSearchValues[0]
               ? TextField(
+                  onChanged: (value) {
+                    advancedSearchTFValues[0] = value;
+                  },
+                  onEditingComplete: () {
+                    FocusScope.of(context).unfocus();
+                    children = null;
+                    closed = false;
+                    setState(() {});
+                  },
                   decoration: InputDecoration(
                     fillColor: Color(0xffffffff),
                     filled: true,
@@ -464,7 +474,6 @@ class SearchPageState extends State<SearchPage> {
             activeColor: Color(0xfffcba03),
             onChanged: (bool value) async {
               presentCategoryDialog();
-              setState(() {});
             },
           ),
         ];
@@ -503,6 +512,7 @@ class SearchPageState extends State<SearchPage> {
   void presentCategoryDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Theme(
           data: ThemeData(fontFamily: "BungeeInline"),
@@ -559,19 +569,11 @@ class SearchPageState extends State<SearchPage> {
                             onPressed: () {
                               advancedSearchValues[1] =
                                   eventfulCategoriesSelected.contains(true);
+                              children = null;
+                              closed = false;
+                              setEventfulCategoryIDSelected();
                               Navigator.of(context).pop();
-                              setState(() {});
-                            },
-                          ),
-                          FlatButton(
-                            child: Text(
-                              'Close',
-                              style: TextStyle(
-                                color: Color(0xff6c7bff),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
+                              this.setState(() {});
                             },
                           ),
                         ],
@@ -585,6 +587,15 @@ class SearchPageState extends State<SearchPage> {
         );
       },
     );
+  }
+
+  void setEventfulCategoryIDSelected() {
+    eventfulCategoryIDsSelected = List<String>();
+    for (int i = 0; i < eventfulCategoriesSelected.length; i++) {
+      if (eventfulCategoriesSelected[i]) {
+        eventfulCategoryIDsSelected.add(eventfulCategoryIDs[i]);
+      }
+    }
   }
 
   void getVotingEventsList(bool search) async {
@@ -629,7 +640,21 @@ class SearchPageState extends State<SearchPage> {
       }
       url += "&l=" + Uri.encodeComponent(location.postalCode.toString());
     } else {
-      url += "q=$searchString";
+      url += "&q=$searchString";
+      if (advancedSearchPressed) {
+        if (advancedSearchValues[0]) {
+          url += "&l=" + advancedSearchTFValues[0];
+        }
+        if (advancedSearchValues[1]) {
+          url += "&category=";
+          for (int i = 0; i < eventfulCategoryIDsSelected.length; i++) {
+            url += eventfulCategoryIDsSelected[i];
+            if (i < eventfulCategoryIDsSelected.length - 1) {
+              url += ",";
+            }
+          }
+        }
+      }
     }
 
     final response = await http.get(url);
@@ -677,8 +702,8 @@ class SearchPageState extends State<SearchPage> {
 
     String url = "https://www.volunteermatch.org/search/";
     if (search) {
+      url += "?k=" + searchString;
       if (advancedSearchPressed) {
-        url += "?k=" + searchString;
         if (advancedSearchValues[0]) {
           url += "&v=true";
         } else {
