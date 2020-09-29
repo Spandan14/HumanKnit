@@ -145,11 +145,14 @@ class _SignupFormState extends State<SignupForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: "Lato",
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Email",
@@ -177,11 +180,14 @@ class _SignupFormState extends State<SignupForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: "Lato",
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Username",
@@ -210,11 +216,14 @@ class _SignupFormState extends State<SignupForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: "Lato",
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Password",
@@ -246,11 +255,14 @@ class _SignupFormState extends State<SignupForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: "Lato",
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Confirm Password",
@@ -269,7 +281,7 @@ class _SignupFormState extends State<SignupForm> {
                   padding: EdgeInsets.only(
                       left: 0.15 * width,
                       right: 0.15 * width,
-                      top: 40,
+                      top: 20,
                       bottom: 20),
                   child: Container(
                       width: 400,

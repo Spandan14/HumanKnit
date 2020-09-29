@@ -151,11 +151,14 @@ class _LoginFormState extends State<LoginForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: 'Lato',
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Email",
@@ -184,11 +187,14 @@ class _LoginFormState extends State<LoginForm> {
                       return null;
                     },
                     style: TextStyle(
+                      fontFamily: 'Lato',
                       fontSize: 14,
                       height: 1.5,
                     ),
                     decoration: InputDecoration(
-                        errorStyle: TextStyle(fontSize: 8),
+                        errorStyle: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 8),
                         contentPadding:
                             const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                         hintText: "Password",
@@ -242,8 +248,8 @@ class _LoginFormState extends State<LoginForm> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
-                            side: BorderSide(color: Colors.grey)),
-                        color: Color.fromRGBO(108, 123, 255, 0.5),
+                            ),
+                        color: Color.fromRGBO(129, 236, 236, 1),
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
@@ -276,8 +282,8 @@ class _LoginFormState extends State<LoginForm> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
-                            side: BorderSide(color: Colors.grey)),
-                        color: Color.fromRGBO(108, 123, 255, 1),
+                            ),
+                        color: Color.fromRGBO(0, 206, 201, 1),
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,

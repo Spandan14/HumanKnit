@@ -140,6 +140,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                           return null;
                         },
                         style: TextStyle(
+                          fontFamily: "Lato",
                           fontSize: 14,
                           height: 1.5,
                         ),
@@ -169,7 +170,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(100),
                               side: BorderSide(color: Colors.grey)),
-                          color: Color.fromRGBO(108, 123, 255, 0.5),
+                          color: Color.fromRGBO(0, 206, 201, 1),
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
                               FirebaseAuth.instance.sendPasswordResetEmail(email: _email.text).then((result) =>
