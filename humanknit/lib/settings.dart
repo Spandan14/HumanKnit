@@ -201,6 +201,7 @@ class SettingsPageState extends State<SettingsPage> {
             "Settings",
             textAlign: TextAlign.center,
             style: TextStyle(
+              fontFamily: "PatrickHand",
               fontSize: 48 / 896 * height,
               color: AppTheme.THEME_COLORS[3][3],
             ),

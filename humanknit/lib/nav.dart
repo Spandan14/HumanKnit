@@ -48,7 +48,7 @@ class _NavigationState extends State<Navigation> {
     ];
 
     return MaterialApp(
-      theme: ThemeData(fontFamily: 'BungeeInline'),
+      theme: ThemeData(fontFamily: 'AdventPro'),
       home: Scaffold(
         backgroundColor: backgroundColors[selectedIndex],
         body: SizedBox.expand(
