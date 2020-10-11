@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:humanknit/goals.dart';
 import 'package:humanknit/userstats.dart';
 import 'package:humanknit/posts.dart';
 import 'package:humanknit/experiences.dart';
@@ -43,6 +44,7 @@ class _NavigationState extends State<Navigation> {
     final List<Widget> children = [
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
       Padding(padding: EdgeInsets.all(10), child: PostsPage()),
+      Padding(padding: EdgeInsets.all(0), child: GoalsPage()),
       Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
@@ -65,8 +67,8 @@ class _NavigationState extends State<Navigation> {
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          backgroundColor: Color(0xffffb86f),
-          selectedItemColor: Color(0xffd90368),
+          backgroundColor: Color.fromRGBO(255, 234, 167, 1),
+          selectedItemColor: Color.fromRGBO(0, 206, 201, 0.5),  
           onTap: onItemTapped,
           items: [
             BottomNavigationBarItem(
