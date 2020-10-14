@@ -80,21 +80,21 @@ class _NavigationState extends State<Navigation> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/friends.png"),
+                new AssetImage("assets/images/trophy.jpeg"),
                 size: iconSize,
               ),
               title: Text(""),
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/experiences.png"),
+                new AssetImage("assets/images/target.png"),
                 size: iconSize,
               ),
-              title: Text(""),
+              title: Text(""),  
             ),
             BottomNavigationBarItem(
-              icon: ImageIcon(
-                new AssetImage("assets/images/settings.png"),
+              icon: Icon(
+                Icons.settings,
                 size: iconSize,
               ),
               title: Text(""),
