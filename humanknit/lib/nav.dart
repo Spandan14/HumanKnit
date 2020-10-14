@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:humanknit/goals.dart';
+import 'package:humanknit/leaderboard.dart';
 import 'package:humanknit/userstats.dart';
 import 'package:humanknit/posts.dart';
 import 'package:humanknit/experiences.dart';
@@ -45,7 +46,7 @@ class _NavigationState extends State<Navigation> {
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
       Padding(padding: EdgeInsets.all(10), child: PostsPage()),
       Padding(padding: EdgeInsets.all(0), child: GoalsPage()),
-      Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
+      Padding(padding: EdgeInsets.all(10), child: LeaderboardPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
 
