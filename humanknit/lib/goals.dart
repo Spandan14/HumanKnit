@@ -27,6 +27,9 @@ class _GoalsPageState extends State<GoalsPage> {
              Firestore.instance.document("communities/$zipcode/users/$uid").setData({
                'user': uid,
              });
+             Firestore.instance.document("users/$uid").updateData({
+               'community': zipcode,
+             });
            }
          });
        }
@@ -35,9 +38,27 @@ class _GoalsPageState extends State<GoalsPage> {
          Firestore.instance.document("communities/$zipcode/users/$uid").setData({
            'user': uid,
          });
+         Firestore.instance.document("users/$uid").updateData({
+         'community': zipcode,
+         });
        }
      });
      return false;
+   }
+   bool isNew = null;
+   Future<void> getUserComm() async {
+      FirebaseUser user = await FirebaseAuth.instance.currentUser();
+      var uid = user.uid;
+      DocumentReference userDataDocument = await Firestore.instance.document("users/$uid");
+      userDataDocument.get().then((datasnapshot) {
+        print(datasnapshot.data['community']);
+        bool first = false;
+        if (isNew == null)
+            first = true;
+        isNew = datasnapshot.data['community'] == null;
+        if (first)
+          setState(() {});
+      });
    }
 
 
@@ -294,6 +315,28 @@ class _GoalsPageState extends State<GoalsPage> {
         ],
       ),
     );
-    return locationChoose;
+
+
+    getUserComm();
+    if (isNew == null) {
+      return Scaffold(
+        body: Center(
+          child: Container(
+            child: Text(
+              "Loading...",
+              style: TextStyle(fontSize: 36, fontFamily: 'BungeeInline'),
+            ),
+          ),
+        ),
+      );
+    }
+    else {
+      if (isNew) {
+        return locationChoose;
+      }
+      else {
+        return goalPicked;
+      }
+    }
   }
 }
