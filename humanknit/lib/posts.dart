@@ -23,7 +23,6 @@ class _PostsPageState extends State<PostsPage> {
   static List<String> _postAuthors = List<String>();
   static List<String> _postAuthorUIDS = List<String>();
   static List<int> _postLikes = List<int>();
-  static List<int> _postVerifies = List<int>();
   Future<void> fetchPostsData() async {
     print("data");
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -39,7 +38,6 @@ class _PostsPageState extends State<PostsPage> {
     List<String> postAuthors = List<String>();
     List<String> postAuthorUIDS = List<String>();
     List<int> postLikes = List<int>();
-    List<int> postVerifies = List<int>();
     await friendDocs.forEach((datasnapshot) async {
       var currentUID = datasnapshot.data["friend"];
       print(currentUID);
@@ -58,7 +56,6 @@ class _PostsPageState extends State<PostsPage> {
         await postAuthors.add(profilesnapshot.data["name"]);
         await postAuthorUIDS.add(currentUID);
         await postLikes.add(postsnapshot.data["likes"]);
-        await postVerifies.add(postsnapshot.data["verifies"]);
         setState(() {
           print("sett");
           _postCaptions = new List.from(postCaptions.reversed);
@@ -70,7 +67,6 @@ class _PostsPageState extends State<PostsPage> {
           _postAuthors = new List.from(postAuthors.reversed);
           _postAuthorUIDS = new List.from(postAuthorUIDS.reversed);
           _postLikes = new List.from(postLikes.reversed);
-          _postVerifies = new List.from(postVerifies.reversed);
           first = false;
           print(postUIDS);
         });
@@ -209,219 +205,13 @@ class _PostsPageState extends State<PostsPage> {
     setState(() {
     });
   }
-  doVerify(int position) async {
-    List<String>verifyUsers = List<String>();
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var uid = user.uid;
-    var author = _postAuthorUIDS[position];
-    var postUID = _postUIDS[position];
-    print(postUID);
-    QuerySnapshot verifies = await Firestore.instance.collection("users/$author/data/postsData/posts/$postUID/verifies").getDocuments();
-    List<DocumentSnapshot> verifyDocs = await verifies.documents;
-    await verifyDocs.forEach((verifysnapshot) async { 
-      verifyUsers.add(verifysnapshot.data["verifiedby"]);
-    });
-    if (verifyUsers.contains(uid)) {
-      await showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return Theme(
-              data: ThemeData (
-                  fontFamily: 'BungeeInline'
-              ),
-              child: AlertDialog (
-                backgroundColor: Color(0xfffeefb3),
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.all(Radius.circular(20.0)),
-                ),
-                title: Text(
-                  'Posts',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xff875053),
-                  ),
-                ),
-                content: Column (
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "You have already verified this post!",
-                      style: TextStyle(
-                        color: Color(0xffaa767c),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Row (
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          FlatButton(
-                            child: Text(
-                              'OK',
-                              style: TextStyle(
-                                color: Color(0xff875053),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              return null;
-                            },
-                          )
-                        ]
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-      );
-    }
-    else {
-      bool can = await canVerify(position);
-      if (can) {
-        await Firestore.instance.document("users/$author/data/postsData/data/$postUID/verifies/$uid").setData({"verifiedby": uid}, merge: true);
-        await Firestore.instance.document("users/$author/data/postsData/data/$postUID").setData({"verifies": FieldValue.increment(1)}, merge: true);
-        await showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (BuildContext context) {
-              return Theme(
-                data: ThemeData (
-                    fontFamily: 'BungeeInline'
-                ),
-                child: AlertDialog (
-                  backgroundColor: Color(0xfffeefb3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(20.0)),
-                  ),
-                  title: Text(
-                    'Posts',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xff875053),
-                    ),
-                  ),
-                  content: Column (
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        "Post Verified Successfully",
-                        style: TextStyle(
-                          color: Color(0xffaa767c),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Row (
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            FlatButton(
-                              child: Text(
-                                'OK',
-                                style: TextStyle(
-                                  color: Color(0xff875053),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                return null;
-                              },
-                            )
-                          ]
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-        );
-      }
-      else {
-        await showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (BuildContext context) {
-              return Theme(
-                data: ThemeData (
-                    fontFamily: 'BungeeInline'
-                ),
-                child: AlertDialog (
-                  backgroundColor: Color(0xfffeefb3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(20.0)),
-                  ),
-                  title: Text(
-                    'Posts',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xff875053),
-                    ),
-                  ),
-                  content: Column (
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        "You cannot verify this post. To verify a post, create a post on your account proving that you were also at this event.",
-                        style: TextStyle(
-                          color: Color(0xffaa767c),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Row (
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            FlatButton(
-                              child: Text(
-                                'OK',
-                                style: TextStyle(
-                                  color: Color(0xff875053),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                return null;
-                              },
-                            )
-                          ]
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-        );
-      }
-    }
-  }
-
-  canVerify(int position) async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var uid = user.uid;
-    var author = _postAuthorUIDS[position];
-    var postUID = _postUIDS[position];
-    var location = _postLocations[position];
-    var date = _postDates[position];
-    List<int>possibleVerificationPosts = List<int>();
-    for (int i = 0; i < _postAuthorUIDS.length; i++) {
-      if (_postAuthorUIDS[i] == uid) {
-        if (_postLocations[i] == location) {
-          if (_postDates[i] == date) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
 
   getPostCard(int position) {
     print("posttile");
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     String caption, date, location, pic, type, author;
-    int likes, verifies;
+    int likes;
     caption = _postCaptions[position];
     date = _postDates[position];
     location = _postLocations[position];
@@ -429,7 +219,6 @@ class _PostsPageState extends State<PostsPage> {
     type = _postTypes[position];
     author = _postAuthors[position];
     likes = _postLikes[position];
-    verifies = _postVerifies[position];
     Color postColor;
     switch (type) {
       case "Volunteering Event":
@@ -476,7 +265,7 @@ class _PostsPageState extends State<PostsPage> {
                         child: Container(
                           alignment: Alignment.topLeft,
                           child: Text(
-                            "\nAt " + location + "\nOn " + date + "\nFor a(n) " + type,
+                            "\nAt " + location + "\nOn " + date,
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               color: Colors.white,
@@ -537,18 +326,8 @@ class _PostsPageState extends State<PostsPage> {
                             ),
                             onPressed: () {doLike(position);},
                           ),
-                          Container(
-                              child: Text(
-                                  verifies.toString()
-                              )
-                          ),
-                          IconButton(
-                            color: Colors.black,
-                            icon: Icon(
-                                Icons.remove_red_eye
-                            ),
-                            onPressed: () {doVerify(position);},
-                          )
+
+
                         ],
                       ),
                     ),

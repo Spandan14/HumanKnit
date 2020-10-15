@@ -41,12 +41,14 @@ class _NavigationState extends State<Navigation> {
       AppTheme.THEME_COLORS[1][0],
       AppTheme.THEME_COLORS[2][0],
       Color(0xffffffff),
+      Color(0xffffffff),
+      Color(0xffffffff),
     ];
     final List<Widget> children = [
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
       Padding(padding: EdgeInsets.all(10), child: PostsPage()),
+      Padding(padding: EdgeInsets.all(0), child: LeaderboardPage()),
       Padding(padding: EdgeInsets.all(0), child: GoalsPage()),
-      Padding(padding: EdgeInsets.all(10), child: LeaderboardPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
 
@@ -81,8 +83,15 @@ class _NavigationState extends State<Navigation> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/trophy.jpeg"),
-                size: iconSize,
+                new AssetImage("assets/images/post.png"),
+                size: iconSize+4,
+              ),
+              title: Text(""),
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                new AssetImage("assets/images/trophy.jpg"),
+                size: iconSize+4,
               ),
               title: Text(""),
             ),
@@ -91,7 +100,7 @@ class _NavigationState extends State<Navigation> {
                 new AssetImage("assets/images/target.png"),
                 size: iconSize,
               ),
-              title: Text(""),  
+              title: Text(""),
             ),
             BottomNavigationBarItem(
               icon: Icon(
