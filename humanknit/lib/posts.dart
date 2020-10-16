@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -146,7 +146,18 @@ class _PostsPageState extends State<PostsPage> {
       await Firestore.instance.document("users/$author/data/postsData/posts/$postUID/likes/$uid").setData({"likedby": uid}, merge: true);
       await Firestore.instance.document("users/$author/data/postsData/posts/$postUID").setData({"likes": FieldValue.increment(1)}, merge: true);
       _postLikes[position]++;
-
+      var now = new DateTime.now();
+      int currentMonth = now.month;
+      String community = "";
+      DocumentReference userDoc = await Firestore.instance.document("users/$author");
+      userDoc.get().then((datasnapshot) async {
+        print(datasnapshot.data['community']);
+        community = datasnapshot.data['community'];
+        print("$community");
+        await Firestore.instance.document("communities/$community/users/$author").setData({
+          "$currentMonth": FieldValue == null ? 0 : FieldValue.increment(1),
+        }, merge: true);
+      });
       await showDialog(
           barrierDismissible: false,
           context: context,
@@ -220,28 +231,17 @@ class _PostsPageState extends State<PostsPage> {
     author = _postAuthors[position];
     likes = _postLikes[position];
     Color postColor;
-    switch (type) {
-      case "Volunteering Event":
-        postColor = Colors.blue;
-        break;
-      case "Community Event":
-        postColor = Colors.green;
-        break;
-      case "Election":
-        postColor = Colors.red;
-        break;
-      default:
-        postColor = Colors.black;
-        break;
-    }
+    postColor = Colors.black;
     return Center(
       child: Container(
         child: Card(
           child: Container(
             width: 330/360 * width,
+            height: 560/692 * height,
             child: Column(
               children: <Widget>[
                 Container(
+                  height: 105/692 * height,
                   color: postColor,
                   child: Column(
                     children: <Widget>[
@@ -249,7 +249,7 @@ class _PostsPageState extends State<PostsPage> {
                         padding: EdgeInsets.all(8.0),
                         child: Container(
                           alignment: Alignment.topLeft,
-                          height: 20/692 * height,
+                          height: 30/692 * height,
                           child: Text(
                             author,
                             textAlign: TextAlign.left,
@@ -261,11 +261,12 @@ class _PostsPageState extends State<PostsPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.only(top: 8.0, left: 8),
                         child: Container(
+                          height: 50/692 * height,
                           alignment: Alignment.topLeft,
                           child: Text(
-                            "\nAt " + location + "\nOn " + date,
+                            "At " + location + "\nOn " + date,
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               color: Colors.white,
@@ -304,7 +305,7 @@ class _PostsPageState extends State<PostsPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Container(
-                            width: 200/360 * width,
+                            width: 250/360 * width,
                             child: Text(
                                 caption,
                               style: TextStyle(
@@ -316,13 +317,17 @@ class _PostsPageState extends State<PostsPage> {
 
                           Container(
                             child: Text(
-                                likes.toString()
+                                likes.toString(),
+                              style: TextStyle(
+                                color: Colors.white
+                              ),
                             ),
                           ),
                           IconButton(
                             color: Colors.black,
                             icon: Icon(
-                                Icons.favorite_border
+                                Icons.favorite_border,
+                              color: Colors.redAccent,
                             ),
                             onPressed: () {doLike(position);},
                           ),
