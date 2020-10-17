@@ -25,8 +25,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   static List<String> _userUIDS = List<String>();
   static List<int> _userRanks = List<int>();
   bool firstLoad = true;
+  bool loading = true;
 
   Future<void>fetchData(String dropdownValue) async {
+    setState(() {
+      loading = true;
+    });
     List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
     'November', 'December'];
     int month = months.indexOf(dropdownValue)+1;
@@ -64,39 +68,46 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     print(userLikes);
     userUIDS.sort((a, b) => userLikes[oldUIDS.indexOf(a)].compareTo(userLikes[oldUIDS.indexOf(b)]));
     print(userUIDS);
+    userUIDS = userUIDS.reversed.toList();
 
-    await userUIDS.forEach((tempUID) async {
+    for (var tempUID in userUIDS) {
       DocumentReference tempUserDoc = await Firestore.instance.document("users/$tempUID");
       var tempUserName;
       await tempUserDoc.get().then((userdatasnapshot) async {
         tempUserName = await userdatasnapshot.data['name'];
       });
       await userNames.add(tempUserName);
+    };
 
+    for (var tempUID in userUIDS) {
       DocumentReference tempUserProfileDoc = await Firestore.instance.document("users/$tempUID/data/profileData");
       var tempUserPic;
-      await tempUserDoc.get().then((userdatasnapshot) async {
+      await tempUserProfileDoc.get().then((userdatasnapshot) async {
         tempUserPic = await userdatasnapshot.data['pic'];
       });
       await userPics.add(tempUserPic);
-    });
-    print(userNames);
+    }
+
+    await print(userNames);
+    await print(userPics);
 
     userLikes.sort();
+    userLikes = userLikes.reversed.toList();
 
     userRanks.add(1);
     int tempcounter = 1;
     for (int i = 1; i < userLikes.length; i++) {
       if (userLikes[i] == userLikes[i-1]) {
         tempcounter++;
-        userRanks.add(userRanks[i-1]);
+        await userRanks.add(userRanks[i-1]);
       }
       else {
         tempcounter++;
-        userRanks.add(tempcounter);
+        await userRanks.add(tempcounter);
       }
     }
     setState(() {
+      loading = false;
       firstLoad = false;
       _userUIDS = userUIDS;
       _userLikes = userLikes;
@@ -131,7 +142,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           },
           child: Card(
             child: Container(
-              height: 100,
+              height: 50,
               width: 320,
               child: Row(
                 children: <Widget>[
@@ -142,13 +153,14 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: "AdventPro",
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24
                       ),
                     ),
                   ),
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             image: NetworkImage(pic), fit: BoxFit.cover),
@@ -158,22 +170,24 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         )),
                   ),
                   Container(
-                    width: 80,
+                    width: 140,
                     child: Text(
                       name,
-                      textAlign: TextAlign.left,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: "AdventPro"
+                        fontFamily: "AdventPro",
+                        fontSize: 18
                       ),
                     ),
                   ),
                   Container(
-                    width: 80,
+                    width: 20,
                     child: Text(
                       likes.toString(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: "AdventPro"
+                        fontFamily: "AdventPro",
+                        fontSize: 20
                       ),
                     ),
                   ),
@@ -193,8 +207,20 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     if (firstLoad) {
       fetchData(dropdownValue);
     }
+    if (loading) {
+      return Scaffold(
+        body: Center(
+          child: Container(
+            child: Text(
+              "Loading...",
+              style: TextStyle(fontSize: 36, fontFamily: 'BungeeInline'),
+            ),
+          ),
+        ),
+      );
+    }
 
-    Scaffold leaderboard = Scaffold(
+    return Scaffold(
       body: Column(
         children: <Widget>[
           Container(
@@ -325,7 +351,5 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         ],
       ),
     );
-
-    return leaderboard;
   }
 }
