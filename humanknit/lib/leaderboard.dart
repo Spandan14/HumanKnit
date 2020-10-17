@@ -26,10 +26,15 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   static List<int> _userRanks = List<int>();
   bool firstLoad = true;
   bool loading = true;
+  var _uid;
+  var selfRank, selfPic, selfLikes;
+
+
 
   Future<void>fetchData(String dropdownValue) async {
     setState(() {
       loading = true;
+      selfPic = "placekitten.com/200/300";
     });
     List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
     'November', 'December'];
@@ -37,6 +42,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     print(month);
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
+    setState(() {
+      _uid = user.uid;
+    });
     List<String> userPics = List<String>();
     List<String> userNames = List<String>();
     List<int> userLikes = List<int>();
@@ -114,6 +122,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       _userNames = userNames;
       _userPics = userPics;
       _userRanks = userRanks;
+      selfRank = _userRanks[_userUIDS.indexOf(_uid)];
+      selfPic = _userPics[_userUIDS.indexOf(_uid)];
+      selfLikes = _userLikes[_userUIDS.indexOf(_uid)];
+
     });
   }
 
@@ -219,6 +231,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         ),
       );
     }
+    if (!loading) {
+      print(_userUIDS);
+      print(_uid);
+    }
 
     return Scaffold(
       body: Column(
@@ -295,7 +311,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        "Rank: 2",
+                        "Rank: $selfRank",
                         style: TextStyle(
                           color: Colors.black,
                           fontFamily: "AdventPro",
@@ -308,7 +324,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       width: 85,
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: NetworkImage("http://placekitten.com/200/300"), fit: BoxFit.cover),
+                              image: NetworkImage(selfPic), fit: BoxFit.cover),
                           border: Border.all(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.all(
                             Radius.circular(500),
@@ -316,7 +332,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     ),
                     Container(
                         child: Text(
-                          "Likes: 5",
+                          "Likes: $selfLikes",
                           style: TextStyle(
                               color: Colors.black,
                               fontFamily: "AdventPro",
