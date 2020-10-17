@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
 import 'package:humanknit/makefriends.dart';
 
+import 'friendspost.dart';
+
 class FriendProfilePage extends StatefulWidget {
   final String friendUID;
 
@@ -20,7 +22,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   bool backButtonVisible = false;
   bool settingsHint = false;
   String profileName, profileDesc, profilePic;
-  int numFriends;
+  int numFriends, numPosts;
 
   Future<void>sendFriendRequest() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
@@ -296,6 +298,11 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         friendsDocument.collection("requests").add({});
       }
     });
+    QuerySnapshot postsDocs = await Firestore.instance.collection("users/$uid/data/postsData/posts").getDocuments();
+    List<DocumentSnapshot> posts = await postsDocs.documents;
+    setState(() {
+      numPosts = posts.length;
+    });
   }
 
   @override
@@ -368,27 +375,32 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
                     ),
                   ),
-                  Container(
-                    height: 75,
-                    width: 75,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "12",
-                          style: TextStyle(
-                            fontSize: 24,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendPostsPage(userUID: widget.friendUID,)));
+                    },
+                    child: Container(
+                      height: 75,
+                      width: 75,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            numPosts.toString(),
+                            style: TextStyle(
+                              fontSize: 24,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Posts",
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        )
+                          Text(
+                            "Posts",
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          )
 
-                      ],
+                        ],
 
+                      ),
                     ),
                   )
                 ],
