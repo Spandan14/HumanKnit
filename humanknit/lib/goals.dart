@@ -15,55 +15,60 @@ class GoalsPage extends StatefulWidget {
 }
 
 class _GoalsPageState extends State<GoalsPage> {
-   Future<bool> sendZipCode(String zipcode) async {
-     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-     var uid = user.uid;
-     DocumentReference communityDocument = await Firestore.instance.document("communities/$zipcode");
-     DocumentReference userCommunityDocument = await Firestore.instance.document("communities/$zipcode/users/$uid");
-     communityDocument.get().then((datasnapshot) {
-       if (datasnapshot.exists) {
-         userCommunityDocument.get().then((userdatasnapshot) {
-           if (!userdatasnapshot.exists) {
-             Firestore.instance.document("communities/$zipcode/users/$uid").setData({
-               'user': uid,
-             });
-             Firestore.instance.document("users/$uid").updateData({
-               'community': zipcode,
-             });
-           }
-         });
-       }
-       else {
-         Firestore.instance.collection("communities").document("$zipcode").setData({});
-         Firestore.instance.document("communities/$zipcode/users/$uid").setData({
-           'user': uid,
-         });
-         Firestore.instance.document("users/$uid").updateData({
-         'community': zipcode,
-         });
-       }
-     });
-     return false;
-   }
-   bool isNew = null;
-   Future<void> getUserComm() async {
-      FirebaseUser user = await FirebaseAuth.instance.currentUser();
-      var uid = user.uid;
-      DocumentReference userDataDocument = await Firestore.instance.document("users/$uid");
-      userDataDocument.get().then((datasnapshot) {
-        print(datasnapshot.data['community']);
-        bool first = false;
-        if (isNew == null)
-            first = true;
-        isNew = datasnapshot.data['community'] == null;
-        if (first)
-          setState(() {});
-      });
-   }
+  Future<bool> sendZipCode(String zipcode) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference communityDocument =
+        await Firestore.instance.document("communities/$zipcode");
+    DocumentReference userCommunityDocument =
+        await Firestore.instance.document("communities/$zipcode/users/$uid");
+    communityDocument.get().then((datasnapshot) {
+      if (datasnapshot.exists) {
+        userCommunityDocument.get().then((userdatasnapshot) {
+          if (!userdatasnapshot.exists) {
+            Firestore.instance
+                .document("communities/$zipcode/users/$uid")
+                .setData({
+              'user': uid,
+            });
+            Firestore.instance.document("users/$uid").updateData({
+              'community': zipcode,
+            });
+          }
+        });
+      } else {
+        Firestore.instance
+            .collection("communities")
+            .document("$zipcode")
+            .setData({});
+        Firestore.instance.document("communities/$zipcode/users/$uid").setData({
+          'user': uid,
+        });
+        Firestore.instance.document("users/$uid").updateData({
+          'community': zipcode,
+        });
+      }
+    });
+    return false;
+  }
 
+  bool isNew = null;
+  Future<void> getUserComm() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference userDataDocument =
+        await Firestore.instance.document("users/$uid");
+    userDataDocument.get().then((datasnapshot) {
+      print(datasnapshot.data['community']);
+      bool first = false;
+      if (isNew == null) first = true;
+      isNew = datasnapshot.data['community'] == null;
+      if (first) setState(() {});
+    });
+  }
 
   final TextEditingController _zip = TextEditingController();
-  static final goalKey= GlobalKey<FormState>();
+  static final goalKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +79,7 @@ class _GoalsPageState extends State<GoalsPage> {
       body: Column(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 40/692 * height),
+            padding: EdgeInsets.only(top: 40 / 692 * height),
             child: Container(
               child: Align(
                 alignment: Alignment.center,
@@ -84,68 +89,56 @@ class _GoalsPageState extends State<GoalsPage> {
                   style: TextStyle(
                       fontFamily: "PatrickHand",
                       fontSize: 40,
-                      color: Color.fromRGBO(0, 206, 201, 1)
-                  ),
+                      color: Color.fromRGBO(0, 206, 201, 1)),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 40/692 * height),
-            child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(100),
-                  color: Color.fromRGBO(253, 203, 110, 1)
-                ),
-              height: 80/692 * height,
-              width: 320/360 * width,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Text(
-                  "Feed 100 Homeless People In Vernon Hills",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: "PatrickHand",
-                    fontSize: 24
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 20/692 * height),
+            padding: EdgeInsets.only(top: 40 / 692 * height),
             child: Container(
               decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(100),
-                  color: Color.fromRGBO(250, 177, 160, 1)
+                  color: Color.fromRGBO(253, 203, 110, 1)),
+              height: 80 / 692 * height,
+              width: 320 / 360 * width,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Feed 100 Homeless People In Vernon Hills",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: "PatrickHand", fontSize: 24),
+                  ),
+                ),
               ),
-              height: 80/692 * height,
-              width: 320/360 * width,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 20 / 692 * height),
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(100),
+                  color: Color.fromRGBO(250, 177, 160, 1)),
+              height: 80 / 692 * height,
+              width: 320 / 360 * width,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      "Your Likes This Month",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: "PatrickHand",
-                          fontSize: 24
-                      ),
-                    ),
+                  Text(
+                    "Your Likes This Month",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: "PatrickHand", fontSize: 24),
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 2,
-                        color: Colors.white
-                      )
-                    ),
-                    height: 100/692 * height,
-                    width: 50/360 * width,
+                        shape: BoxShape.circle,
+                        border: Border.all(width: 2, color: Colors.white)),
+                    height: 100 / 692 * height,
+                    width: 50 / 360 * width,
                     child: Stack(
                       alignment: Alignment.center,
                       children: <Widget>[
@@ -158,11 +151,10 @@ class _GoalsPageState extends State<GoalsPage> {
                           5.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: "AdventPro",
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                          ),
+                              fontFamily: "AdventPro",
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                       ],
                     ),
@@ -177,23 +169,20 @@ class _GoalsPageState extends State<GoalsPage> {
               "New goals for November will be picked starting October 24th\n\n\nStay Tuned!",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: "AdventPro",
-                fontSize: 30,
-                color: Color.fromRGBO(0, 206, 203, 1)
-              ),
+                  fontFamily: "AdventPro",
+                  fontSize: 30,
+                  color: Color.fromRGBO(0, 206, 203, 1)),
             ),
-          )
-        
+          ),
         ],
       ),
     );
-
 
     Scaffold goalVoting = Scaffold(
       body: Column(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 40/692 * height),
+            padding: EdgeInsets.only(top: 40 / 692 * height),
             child: Container(
               child: Align(
                 alignment: Alignment.center,
@@ -203,22 +192,20 @@ class _GoalsPageState extends State<GoalsPage> {
                   style: TextStyle(
                       fontFamily: "PatrickHand",
                       fontSize: 40,
-                      color: Color.fromRGBO(0, 206, 201, 1)
-                  ),
+                      color: Color.fromRGBO(0, 206, 201, 1)),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 20/692 * height),
+            padding: EdgeInsets.only(top: 20 / 692 * height),
             child: Container(
               decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(100),
-                  color: Color.fromRGBO(250, 177, 160, 1)
-              ),
-              height: 80/692 * height,
-              width: 320/360 * width,
+                  color: Color.fromRGBO(250, 177, 160, 1)),
+              height: 80 / 692 * height,
+              width: 320 / 360 * width,
               child: Row(
                 children: <Widget>[
                   Stack(),
@@ -230,26 +217,23 @@ class _GoalsPageState extends State<GoalsPage> {
       ),
     );
 
-
-
     Scaffold locationChoose = Scaffold(
       body: Column(
         children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 150.0),
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  "Enter Zip Code",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
+          Padding(
+            padding: EdgeInsets.only(top: 150.0),
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                "Enter Zip Code",
+                textAlign: TextAlign.center,
+                style: TextStyle(
                     fontFamily: "PatrickHand",
                     fontSize: 40,
-                    color: Color.fromRGBO(0, 206, 201, 1)
-                  ),
-                ),
+                    color: Color.fromRGBO(0, 206, 201, 1)),
               ),
             ),
+          ),
           Form(
             key: goalKey,
             child: Padding(
@@ -261,8 +245,8 @@ class _GoalsPageState extends State<GoalsPage> {
                   validator: (value) {
                     if (value.isEmpty) {
                       return "Please enter a zip code";
-                    }
-                    else if (!RegExp('[0-9]{5}').hasMatch(value) || value.length != 5) {
+                    } else if (!RegExp('[0-9]{5}').hasMatch(value) ||
+                        value.length != 5) {
                       return "Incorrect zip code";
                     }
                     return null;
@@ -273,11 +257,9 @@ class _GoalsPageState extends State<GoalsPage> {
                     height: 1.5,
                   ),
                   decoration: InputDecoration(
-                      errorStyle: TextStyle(
-                          fontFamily: "Lato",
-                          fontSize: 8),
+                      errorStyle: TextStyle(fontFamily: "Lato", fontSize: 8),
                       contentPadding:
-                      const EdgeInsets.only(top: 4, bottom: 4, left: 15),
+                          const EdgeInsets.only(top: 4, bottom: 4, left: 15),
                       hintText: "Zip Code",
                       border: OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
@@ -316,7 +298,6 @@ class _GoalsPageState extends State<GoalsPage> {
       ),
     );
 
-
     getUserComm();
     if (isNew == null) {
       return Scaffold(
@@ -329,12 +310,10 @@ class _GoalsPageState extends State<GoalsPage> {
           ),
         ),
       );
-    }
-    else {
+    } else {
       if (isNew) {
         return locationChoose;
-      }
-      else {
+      } else {
         return goalPicked;
       }
     }
