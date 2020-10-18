@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -44,6 +46,9 @@ class _GoalsPageState extends State<GoalsPage> {
     String formattedDate = formatter.format(now);
     QuerySnapshot goalDocs = await Firestore.instance.collection("communities/$community/goals/$formattedDate/goals").getDocuments();
     List<DocumentSnapshot> goalDocSnapshots = await goalDocs.documents;
+    if (goalDocSnapshots.length == 0) {
+      await addGoals();
+    }
     for (var snapshot in goalDocSnapshots) {
       await goals.add(snapshot.data['goal']);
       var id = await snapshot.documentID;
@@ -70,6 +75,44 @@ class _GoalsPageState extends State<GoalsPage> {
       canVote = numVotes >= 2 ? false : true;
       firstLoad = false;
     });
+  }
+
+  Future<void>addGoals() async {
+    List<String> possibleGoals = ["t", "u", "v", "w", "x", "y"];
+    var random = new Random();
+    var firstGoal = random.nextInt(6);
+    String firstGoalText = possibleGoals[firstGoal];
+    possibleGoals.removeAt(firstGoal);
+    var secondGoal = random.nextInt(5);
+    String secondGoalText = possibleGoals[secondGoal];
+    print(firstGoalText);
+    print(secondGoalText);
+
+
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference userDoc = await Firestore.instance.document("users/$uid");
+    var community;
+    await userDoc.get().then((datasnapshot) async {
+      community = await datasnapshot.data["community"];
+    });
+    var now = DateTime.now();
+    var id = now.millisecondsSinceEpoch;
+    var formatter = new DateFormat('yyyy-MMMM');
+    String formattedDate = formatter.format(now);
+    DocumentReference goalDoc = await Firestore.instance.document("communities/$community/goals/$formattedDate/goals/${id.toString()}");
+    goalDoc.setData({
+      'goal': firstGoalText,
+    }, merge: true);
+    id = now.millisecondsSinceEpoch+1000;
+    DocumentReference secondGoalDoc = await Firestore.instance.document("communities/$community/goals/$formattedDate/goals/${id.toString()}");
+    secondGoalDoc.setData({
+      'goal': secondGoalText,
+    }, merge: true);
+  }
+
+  Future<void>setMonthGoal() async {
+
   }
 
   Future<void>revokeVote(String goalUID) async {
