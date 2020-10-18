@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:humanknit/theme.dart';
 import 'launch.dart';
 import 'splash.dart';
 
@@ -24,7 +23,6 @@ class _StartupSplashScreenState extends State<StartupSplashScreen> {
       themeInteger = 0;
       prefs.setInt('theme', themeInteger);
     }
-    AppTheme.setThemeColors(themeInteger);
 
     if (firstTime != null && !firstTime) {// Not first time
       print("0");

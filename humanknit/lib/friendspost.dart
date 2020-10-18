@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:humanknit/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -365,7 +364,7 @@ class _FriendPostsPageState extends State<FriendPostsPage> {
               ],
             ),
             Container(
-              color: AppTheme.THEME_COLORS[1][0],
+              color: Color(0xffc1baff),
                 child: Column(
                   children: <Widget>[
                     Container(
@@ -392,7 +391,7 @@ class _FriendPostsPageState extends State<FriendPostsPage> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
-        color: AppTheme.THEME_COLORS[1][0],
+        color: Color(0xffc1baff),
         child: Column(
           children: <Widget>[
             AppBar(

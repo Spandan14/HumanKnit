@@ -2,11 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:humanknit/goals.dart';
 import 'package:humanknit/leaderboard.dart';
-import 'package:humanknit/userstats.dart';
 import 'package:humanknit/posts.dart';
-import 'package:humanknit/experiences.dart';
 import 'package:humanknit/settings.dart';
-import 'package:humanknit/theme.dart';
 import 'package:humanknit/profile.dart';
 
 class Navigation extends StatefulWidget {
@@ -38,11 +35,10 @@ class _NavigationState extends State<Navigation> {
     final iconSize = 30 / 896 * screenHeight;
     final List<Color> backgroundColors = [
       Colors.white,
-      AppTheme.THEME_COLORS[1][0],
-      AppTheme.THEME_COLORS[2][0],
-      Color(0xffffffff),
-      Color(0xffffffff),
-      Color(0xffffffff),
+      Color(0xffc1baff),
+      Colors.white,
+      Colors.white,
+      Colors.white,
     ];
     final List<Widget> children = [
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
