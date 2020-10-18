@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
 import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
-import 'package:humanknit/stats.dart';
 import 'addpost.dart';
 import 'friendprofile.dart';
 
