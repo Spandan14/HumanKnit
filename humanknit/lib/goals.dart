@@ -568,7 +568,7 @@ class _GoalsPageState extends State<GoalsPage> {
           Stack(
             children: <Widget>[
               Container(
-                height: 500,
+                height: 520,
                 child: Column(
                   children: <Widget>[
                     Expanded(
@@ -745,7 +745,7 @@ class _GoalsPageState extends State<GoalsPage> {
         var formatter = new DateFormat('dd');
         String formattedDate = formatter.format(now);
         int day = int.parse(formattedDate);
-        if (day >= 18) {
+        if (day >= 15) {
           if (firstLoad) {
             fetchData();
           }
