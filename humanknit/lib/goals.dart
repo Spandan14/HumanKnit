@@ -160,6 +160,9 @@ class _GoalsPageState extends State<GoalsPage> {
         }, merge: true);
 
         currentGoal = bestGoalText;
+        if (currentGoal == null) {
+          currentGoal = "No goal set!";
+        }
       }
     });
     DocumentReference userCommDoc = Firestore.instance.document("communities/$community/users/$uid");
