@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:humanknit/changepassword.dart';
 import 'package:humanknit/customexpansiontile.dart' as custom;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:humanknit/forgotpassword.dart';
 import 'package:humanknit/splash.dart';
 import 'package:humanknit/startersplash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,7 +115,9 @@ class SettingsPageState extends State<SettingsPage> {
                   fontSize: 24 / height * 896,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
+              },
             ),
           ),
         ),

@@ -31,8 +31,13 @@ class _ForumAddState extends State<ForumAdd> {
     var uid = user.uid;
     DocumentReference userDoc = await Firestore.instance.document("users/$uid");
     var community;
+    var username;
     await userDoc.get().then((datasnapshot) async {
       community = await datasnapshot.data["community"];
+    });
+    DocumentReference userProfileDoc = await Firestore.instance.document("users/$uid/data/profileData");
+    await userProfileDoc.get().then((datasnapshot) async {
+      username = await datasnapshot.data["name"];
     });
     var now = DateTime.now();
     var id = now.millisecondsSinceEpoch;
@@ -42,6 +47,7 @@ class _ForumAddState extends State<ForumAdd> {
         "communities/$community/goals/$formattedDate/goals/${widget.goalUID}/forumPosts/$id");
     forumDoc.setData({
       'reply': forumText,
+      'author': username,
     }, merge: true);
   }
 

@@ -80,7 +80,9 @@ class _GoalsPageState extends State<GoalsPage> {
   }
 
   Future<void>addGoals() async {
-    List<String> possibleGoals = ["t", "u", "v", "w", "x", "y"];
+    List<String> possibleGoals = ["Plant trees", "Donate to local charities",
+                                  "Participate in a trash clean-up event", "Go to different volunteering events",
+                                  "Participate in virtual volunteering", "Donate to local businesses in financial crises"];
     var random = new Random();
     var firstGoal = random.nextInt(6);
     String firstGoalText = possibleGoals[firstGoal];
