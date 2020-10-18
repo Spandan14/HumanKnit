@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:humanknit/addgoal.dart';
 import 'package:humanknit/editprofile.dart';
 import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
 import 'package:humanknit/stats.dart';
+import 'package:intl/intl.dart';
 import 'addpost.dart';
 
 class GoalsPage extends StatefulWidget {
@@ -15,7 +17,249 @@ class GoalsPage extends StatefulWidget {
 }
 
 class _GoalsPageState extends State<GoalsPage> {
-  Future<bool> sendZipCode(String zipcode) async {
+
+  static ScrollController _scrollController = new ScrollController();
+  List<String> _goals = List<String>();
+  List<bool> _hasUserVoted = List<bool>();
+  List<String> _goalUIDS = List<String>();
+  bool loading = true;
+  bool canVote = true;
+
+  Future<void>fetchData() async {
+    List<String> goals = List<String>();
+    List<bool> hasUserVoted = List<bool>();
+    List<String> goalUIDS = List<String>();
+    setState(() {
+      loading = true;
+    });
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference userDoc = await Firestore.instance.document("users/$uid");
+    var community;
+    await userDoc.get().then((datasnapshot) async {
+      community = await datasnapshot.data['community'];
+    });
+    var now = DateTime.now();
+    var formatter = new DateFormat('yyyy-MMMM');
+    String formattedDate = formatter.format(now);
+    QuerySnapshot goalDocs = await Firestore.instance.collection("communities/$community/goals/$formattedDate/goals").getDocuments();
+    List<DocumentSnapshot> goalDocSnapshots = await goalDocs.documents;
+    for (var snapshot in goalDocSnapshots) {
+      await goals.add(snapshot.data['goal']);
+      var id = await snapshot.documentID;
+      goalUIDS.add(id);
+      QuerySnapshot usersVoted = await Firestore.instance.collection("communities/$community/goals/$formattedDate/goals/$id/votes").getDocuments();
+      List<DocumentSnapshot> voteDocs = await usersVoted.documents;
+      bool isVoted = false;
+      for (var votesnapshot in voteDocs) {
+          if (votesnapshot.documentID == uid)
+            isVoted = true;
+      }
+      hasUserVoted.add(isVoted);
+    }
+    setState(() {
+      loading = false;
+      _goals = goals;
+      _hasUserVoted = hasUserVoted;
+      _goalUIDS = goalUIDS;
+      int numVotes = 0;
+      for (var vote in hasUserVoted) {
+        if (vote)
+          numVotes++;
+      }
+      canVote = numVotes >= 2 ? false : true;
+      firstLoad = false;
+    });
+  }
+
+  Future<void>revokeVote(String goalUID) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference userDoc = await Firestore.instance.document("users/$uid");
+    var community;
+    await userDoc.get().then((datasnapshot) async {
+      community = await datasnapshot.data['community'];
+    });
+
+    var now = DateTime.now();
+    var formatter = new DateFormat('yyyy-MMMM');
+    String formattedDate = formatter.format(now);
+    await Firestore.instance.document("communities/$community/goals/$formattedDate/goals/$goalUID/votes/$uid").delete();
+    setState(() {
+      firstLoad = true;
+    });
+  }
+
+  Future<void>doVote(String goalUID) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    var uid = user.uid;
+    DocumentReference userDoc = await Firestore.instance.document("users/$uid");
+    var community;
+    await userDoc.get().then((datasnapshot) async {
+      community = await datasnapshot.data['community'];
+    });
+
+    var now = DateTime.now();
+    var formatter = new DateFormat('yyyy-MMMM');
+    String formattedDate = formatter.format(now);
+    await Firestore.instance.document("communities/$community/goals/$formattedDate/goals/$goalUID/votes/$uid").setData({
+      'user': uid,
+    }, merge: true);
+    setState(() {
+      firstLoad = true;
+    });
+  }
+
+  getGoalCard(int position) {
+    print("goaltile");
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    String goalText, goalUID;
+    bool hasVoted;
+    goalText = _goals[position];
+    goalUID = _goalUIDS[position];
+    hasVoted = _hasUserVoted[position];
+    return Center(
+      child: Container(
+        child: GestureDetector(
+          onTap: () {
+            if (canVote) {
+              if (hasVoted) {
+                revokeVote(goalUID);
+              }
+              else {
+                doVote(goalUID);
+              }
+            }
+            else {
+              if (hasVoted) {
+                revokeVote(goalUID);
+              }
+              else {
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Theme(
+                        data: ThemeData (
+                            fontFamily: 'BungeeInline'
+                        ),
+                        child: AlertDialog (
+                          backgroundColor: Color(0xfffeefb3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(20.0)),
+                          ),
+                          title: Text(
+                            'Cannot Vote',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xff875053),
+                            ),
+                          ),
+                          content: Column (
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                "You have already voted for two goals! Click on them to revoke the votes in order to free up more votes.",
+                                style: TextStyle(
+                                  color: Color(0xffaa767c),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Row (
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    FlatButton(
+                                      child: Text(
+                                        'OK',
+                                        style: TextStyle(
+                                          color: Color(0xff875053),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  ]
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                );
+              }
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Card(
+              color: hasVoted ? Color.fromRGBO(116, 185, 255, 1) : Color.fromRGBO(253, 203, 110, 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(500)
+              ),
+              elevation: 2,
+              shadowColor: Colors.black,
+                child: Container(
+                  height: 80,
+                  width: 310,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(500),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          width: 70,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                alignment: Alignment.center,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle
+                                ),
+                              ),
+                              Visibility(
+                                visible: hasVoted,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 60,
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        child: Text(
+                          goalText,
+                          style: TextStyle(
+                            fontFamily: "PatrickHand",
+                            fontSize: 20
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ),
+          ),
+        ),
+    );
+  }
+
+
+
+  Future<bool>sendZipCode(String zipcode) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
     DocumentReference communityDocument =
@@ -36,7 +280,8 @@ class _GoalsPageState extends State<GoalsPage> {
             });
           }
         });
-      } else {
+      }
+      else {
         Firestore.instance
             .collection("communities")
             .document("$zipcode")
@@ -69,6 +314,8 @@ class _GoalsPageState extends State<GoalsPage> {
 
   final TextEditingController _zip = TextEditingController();
   static final goalKey = GlobalKey<FormState>();
+
+  bool firstLoad = true;
 
   @override
   Widget build(BuildContext context) {
@@ -184,10 +431,11 @@ class _GoalsPageState extends State<GoalsPage> {
           Padding(
             padding: EdgeInsets.only(top: 40 / 692 * height),
             child: Container(
+              height: 60,
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "Goals for November",
+                  "Goals for Next Month",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: "PatrickHand",
@@ -197,22 +445,81 @@ class _GoalsPageState extends State<GoalsPage> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 20 / 692 * height),
-            child: Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(100),
-                  color: Color.fromRGBO(250, 177, 160, 1)),
-              height: 80 / 692 * height,
-              width: 320 / 360 * width,
-              child: Row(
-                children: <Widget>[
-                  Stack(),
-                ],
+          Stack(
+            children: <Widget>[
+              Container(
+                height: 500,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          controller: _scrollController,
+                          shrinkWrap: true,
+                          itemCount: _goalUIDS.length,
+                          itemBuilder: (BuildContext context, index) {
+                            return getGoalCard(index);
+                          },
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 100,
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            width: 230,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => GoalAdd()));
+                            },
+                            child: Stack(
+                              children: <Widget>[
+                                Container(
+                                  alignment: Alignment.centerRight,
+                                  width: 100,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color.fromRGBO(162, 155, 254, 1),
+                                            Color.fromRGBO(108, 92, 231, 1)
+                                          ]
+                                      )
+                                  ),
+                                  width: 100,
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 80,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )
         ],
       ),
     );
@@ -314,7 +621,28 @@ class _GoalsPageState extends State<GoalsPage> {
       if (isNew) {
         return locationChoose;
       } else {
-        return goalPicked;
+        var now = DateTime.now();
+        var formatter = new DateFormat('dd');
+        String formattedDate = formatter.format(now);
+        int day = int.parse(formattedDate);
+        // if (day >= 24) {return goalVoting;}
+        // return goalPicked;
+        if (firstLoad) {
+          fetchData();
+        }
+        if (loading) {
+          return Scaffold(
+            body: Center(
+              child: Container(
+                child: Text(
+                  "Loading...",
+                  style: TextStyle(fontSize: 36, fontFamily: 'BungeeInline'),
+                ),
+              ),
+            ),
+          );
+        }
+        return goalVoting;
       }
     }
   }
