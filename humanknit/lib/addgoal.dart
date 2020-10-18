@@ -24,7 +24,6 @@ class _GoalAddState extends State<GoalAdd> {
   final TextEditingController _goal = TextEditingController();
 
   Future<void> addGoal(String goalText) async {
-
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
     DocumentReference userDoc = await Firestore.instance.document("users/$uid");
@@ -36,12 +35,12 @@ class _GoalAddState extends State<GoalAdd> {
     var id = now.millisecondsSinceEpoch;
     var formatter = new DateFormat('yyyy-MMMM');
     String formattedDate = formatter.format(now);
-    DocumentReference goalDoc = await Firestore.instance.document("communities/$community/goals/$formattedDate/goals/${id.toString()}");
+    DocumentReference goalDoc = await Firestore.instance.document(
+        "communities/$community/goals/$formattedDate/goals/${id.toString()}");
     goalDoc.setData({
       'goal': goalText,
     }, merge: true);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,56 +59,59 @@ class _GoalAddState extends State<GoalAdd> {
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 10/692 * height),
+                    padding: EdgeInsets.only(
+                        left: 30 / 360 * width,
+                        right: 30 / 360 * width,
+                        top: 10 / 692 * height),
                     child: Container(
                         child: TextFormField(
-                          controller: _goal,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return "Please enter a goal";
-                            }
-                            return null;
-                          },
-                          style: TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
-                          decoration: InputDecoration(
-                              errorStyle: TextStyle(fontSize: 8),
-                              contentPadding:
-                              const EdgeInsets.only(top: 4, bottom: 4, left: 15),
-                              hintText: "Goal Text",
-                              border: OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                    const Radius.circular(100.0),
-                                  ),
-                                  borderSide: BorderSide(
-                                    color: Color.fromRGBO(177, 177, 177, 1),
-                                    width: 0.5,
-                                  ))),
-                        )
-                    ),
+                      controller: _goal,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return "Please enter a goal";
+                        }
+                        return null;
+                      },
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                      decoration: InputDecoration(
+                          errorStyle: TextStyle(fontSize: 8),
+                          contentPadding: const EdgeInsets.only(
+                              top: 4, bottom: 4, left: 15),
+                          hintText: "Goal Text",
+                          border: OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(
+                                const Radius.circular(100.0),
+                              ),
+                              borderSide: BorderSide(
+                                color: Color.fromRGBO(177, 177, 177, 1),
+                                width: 0.5,
+                              ))),
+                    )),
                   ),
                   Container(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 10/692 * height, left: 40/360 * width, right: 40/360 * width),
-                        child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100),
-                                side: BorderSide(color: Colors.grey)),
-                            color: Color.fromRGBO(252, 186, 3, 1),
-                            onPressed: () {
-                              if (_formKeyGoal.currentState.validate()) {
-                                addGoal(_goal.text);
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            child: Text('Add Goal',
-                                style:
-                                TextStyle(fontSize: 20, color: Colors.white))
-                        ),
-                      )
-                  )
+                    padding: EdgeInsets.only(
+                        top: 10 / 692 * height,
+                        left: 40 / 360 * width,
+                        right: 40 / 360 * width),
+                    child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                            side: BorderSide(color: Colors.grey)),
+                        color: Color.fromRGBO(252, 186, 3, 1),
+                        onPressed: () {
+                          if (_formKeyGoal.currentState.validate()) {
+                            addGoal(_goal.text);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Text('Add Goal',
+                            style:
+                                TextStyle(fontSize: 20, color: Colors.white))),
+                  ))
                 ],
               ),
             )

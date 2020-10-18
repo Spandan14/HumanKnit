@@ -12,6 +12,7 @@ import 'package:humanknit/makefriends.dart';
 import 'package:humanknit/stats.dart';
 import 'package:intl/intl.dart';
 import 'addpost.dart';
+import 'forums.dart';
 
 class GoalsPage extends StatefulWidget {
   @override
@@ -302,6 +303,9 @@ class _GoalsPageState extends State<GoalsPage> {
                 );
               }
             }
+          },
+          onLongPress: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ForumPage(goalUID: goalUID,)));
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -740,7 +744,7 @@ class _GoalsPageState extends State<GoalsPage> {
         var formatter = new DateFormat('dd');
         String formattedDate = formatter.format(now);
         int day = int.parse(formattedDate);
-        if (day >= 24) {
+        if (day >= 18) {
           if (firstLoad) {
             fetchData();
           }

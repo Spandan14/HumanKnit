@@ -16,7 +16,6 @@ class LeaderboardPage extends StatefulWidget {
 }
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
-
   static ScrollController _scrollController = new ScrollController();
 
   static List<String> _userPics = List<String>();
@@ -29,16 +28,26 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   var _uid;
   var selfRank, selfPic, selfLikes;
 
-
-
-  Future<void>fetchData(String dropdownValue) async {
+  Future<void> fetchData(String dropdownValue) async {
     setState(() {
       loading = true;
       selfPic = "placekitten.com/200/300";
     });
-    List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
-    'November', 'December'];
-    int month = months.indexOf(dropdownValue)+1;
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    int month = months.indexOf(dropdownValue) + 1;
     print(month);
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
@@ -51,12 +60,15 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     List<String> userUIDS = List<String>();
     List<int> userRanks = List<int>();
 
-    DocumentReference userData = await Firestore.instance.document("users/$uid");
+    DocumentReference userData =
+        await Firestore.instance.document("users/$uid");
     var community;
     await userData.get().then((datasnapshot) async {
       community = await datasnapshot.data['community'];
     });
-    QuerySnapshot commUsers = await Firestore.instance.collection("communities/$community/users").getDocuments();
+    QuerySnapshot commUsers = await Firestore.instance
+        .collection("communities/$community/users")
+        .getDocuments();
     List<DocumentSnapshot> commUserDocs = await commUsers.documents;
     await commUserDocs.forEach((datasnapshot) async {
       var tempUID = await datasnapshot.data['user'];
@@ -71,24 +83,28 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       await print(tempLikes);
     });
 
-    List<String>oldUIDS = userUIDS;
+    List<String> oldUIDS = userUIDS;
     print(oldUIDS);
     print(userLikes);
-    userUIDS.sort((a, b) => userLikes[oldUIDS.indexOf(a)].compareTo(userLikes[oldUIDS.indexOf(b)]));
+    userUIDS.sort((a, b) =>
+        userLikes[oldUIDS.indexOf(a)].compareTo(userLikes[oldUIDS.indexOf(b)]));
     print(userUIDS);
     userUIDS = userUIDS.reversed.toList();
 
     for (var tempUID in userUIDS) {
-      DocumentReference tempUserDoc = await Firestore.instance.document("users/$tempUID");
+      DocumentReference tempUserDoc =
+          await Firestore.instance.document("users/$tempUID");
       var tempUserName;
       await tempUserDoc.get().then((userdatasnapshot) async {
         tempUserName = await userdatasnapshot.data['name'];
       });
       await userNames.add(tempUserName);
-    };
+    }
+    ;
 
     for (var tempUID in userUIDS) {
-      DocumentReference tempUserProfileDoc = await Firestore.instance.document("users/$tempUID/data/profileData");
+      DocumentReference tempUserProfileDoc =
+          await Firestore.instance.document("users/$tempUID/data/profileData");
       var tempUserPic;
       await tempUserProfileDoc.get().then((userdatasnapshot) async {
         tempUserPic = await userdatasnapshot.data['pic'];
@@ -105,11 +121,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     userRanks.add(1);
     int tempcounter = 1;
     for (int i = 1; i < userLikes.length; i++) {
-      if (userLikes[i] == userLikes[i-1]) {
+      if (userLikes[i] == userLikes[i - 1]) {
         tempcounter++;
-        await userRanks.add(userRanks[i-1]);
-      }
-      else {
+        await userRanks.add(userRanks[i - 1]);
+      } else {
         tempcounter++;
         await userRanks.add(tempcounter);
       }
@@ -125,14 +140,25 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       selfRank = _userRanks[_userUIDS.indexOf(_uid)];
       selfPic = _userPics[_userUIDS.indexOf(_uid)];
       selfLikes = _userLikes[_userUIDS.indexOf(_uid)];
-
     });
   }
 
-  static List<String> months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
-    'November', 'December'];
+  static List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
   static var now = new DateTime.now();
-  String dropdownValue = months[now.month-1];
+  String dropdownValue = months[now.month - 1];
 
   getRankCard(int position) {
     print('ranktile');
@@ -150,7 +176,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       child: Container(
         child: GestureDetector(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendProfilePage(friendUID: uid,)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FriendProfilePage(
+                          friendUID: uid,
+                        )));
           },
           child: Card(
             child: Container(
@@ -164,10 +195,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       rank.toString(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: "AdventPro",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24
-                      ),
+                          fontFamily: "AdventPro",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24),
                     ),
                   ),
                   Container(
@@ -186,10 +216,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     child: Text(
                       name,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "AdventPro",
-                        fontSize: 18
-                      ),
+                      style: TextStyle(fontFamily: "AdventPro", fontSize: 18),
                     ),
                   ),
                   Container(
@@ -197,10 +224,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     child: Text(
                       likes.toString(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "AdventPro",
-                        fontSize: 20
-                      ),
+                      style: TextStyle(fontFamily: "AdventPro", fontSize: 20),
                     ),
                   ),
                 ],
@@ -240,18 +264,16 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       body: Column(
         children: <Widget>[
           Container(
-            height: 200/692 * height,
+            height: 200 / 692 * height,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.fromRGBO(84, 172, 237, 1),
-                  Color.fromRGBO(96, 108, 177, 1)
-                ],
-                tileMode: TileMode.repeated
-              )
-            ),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromRGBO(84, 172, 237, 1),
+                      Color.fromRGBO(96, 108, 177, 1)
+                    ],
+                    tileMode: TileMode.repeated)),
             child: Column(
               children: <Widget>[
                 Container(
@@ -263,16 +285,14 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       Container(
                         width: 180,
                         alignment: Alignment.centerRight,
-
                         child: DropdownButton<String>(
                           value: dropdownValue,
                           icon: Icon(Icons.arrow_drop_down),
                           style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: "AdventPro",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24
-                          ),
+                              color: Colors.black,
+                              fontFamily: "AdventPro",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
                           underline: Container(
                             height: 2,
                             color: Colors.deepPurpleAccent,
@@ -283,9 +303,20 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                               firstLoad = true;
                             });
                           },
-                          items: <String>['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
-                                          'November', 'December']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: <String>[
+                            'January',
+                            'February',
+                            'March',
+                            'April',
+                            'May',
+                            'June',
+                            'July',
+                            'August',
+                            'September',
+                            'October',
+                            'November',
+                            'December'
+                          ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -297,10 +328,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         child: Text(
                           "Leaderboard",
                           style: TextStyle(
-                            fontFamily: "AdventPro",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24
-                          ),
+                              fontFamily: "AdventPro",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24),
                         ),
                       )
                     ],
@@ -310,15 +340,13 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Container(
-                      child: Text(
-                        "Rank: $selfRank",
-                        style: TextStyle(
+                        child: Text(
+                      "Rank: $selfRank",
+                      style: TextStyle(
                           color: Colors.black,
                           fontFamily: "AdventPro",
-                          fontSize: 24
-                        ),
-                      )
-                    ),
+                          fontSize: 24),
+                    )),
                     Container(
                       height: 85,
                       width: 85,
@@ -332,14 +360,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     ),
                     Container(
                         child: Text(
-                          "Likes: $selfLikes",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontFamily: "AdventPro",
-                              fontSize: 24
-                          ),
-                        )
-                    ),
+                      "Likes: $selfLikes",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: "AdventPro",
+                          fontSize: 24),
+                    )),
                   ],
                 ),
               ],
