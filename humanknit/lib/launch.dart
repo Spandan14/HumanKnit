@@ -66,12 +66,12 @@ class LaunchScreenState extends State<LaunchScreen> with SingleTickerProviderSta
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 24 / 896 * screenHeight,
-        color: Color(0xff6c7bff),
+        color: Color.fromRGBO(0, 206, 201, 1),
       ),
     );
 
     final getStartedButton = FlatButton(
-      color: Color(0xff6c7bff),
+      color: Color.fromRGBO(0, 206, 201, 1),
       padding: EdgeInsets.all(20),
       onPressed: () {
         Navigator.push(

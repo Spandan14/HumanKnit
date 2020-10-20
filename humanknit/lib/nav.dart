@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:humanknit/userstats.dart';
+import 'package:humanknit/goals.dart';
+import 'package:humanknit/leaderboard.dart';
 import 'package:humanknit/posts.dart';
-import 'package:humanknit/experiences.dart';
 import 'package:humanknit/settings.dart';
-import 'package:humanknit/theme.dart';
 import 'package:humanknit/profile.dart';
 
 class Navigation extends StatefulWidget {
@@ -36,19 +35,21 @@ class _NavigationState extends State<Navigation> {
     final iconSize = 30 / 896 * screenHeight;
     final List<Color> backgroundColors = [
       Colors.white,
-      AppTheme.THEME_COLORS[1][0],
-      AppTheme.THEME_COLORS[2][0],
-      Color(0xffffffff),
+      Color(0xffc1baff),
+      Colors.white,
+      Colors.white,
+      Colors.white,
     ];
     final List<Widget> children = [
       Padding(padding: EdgeInsets.all(0), child: MainProfilePage()),
       Padding(padding: EdgeInsets.all(10), child: PostsPage()),
-      Padding(padding: EdgeInsets.all(10), child: ExperiencesPage()),
+      Padding(padding: EdgeInsets.all(0), child: LeaderboardPage()),
+      Padding(padding: EdgeInsets.all(0), child: GoalsPage()),
       Padding(padding: EdgeInsets.all(10), child: SettingsPage()),
     ];
 
     return MaterialApp(
-      theme: ThemeData(fontFamily: 'BungeeInline'),
+      theme: ThemeData(fontFamily: 'AdventPro'),
       home: Scaffold(
         backgroundColor: backgroundColors[selectedIndex],
         body: SizedBox.expand(
@@ -65,8 +66,8 @@ class _NavigationState extends State<Navigation> {
           type: BottomNavigationBarType.fixed,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          backgroundColor: Color(0xffffb86f),
-          selectedItemColor: Color(0xffd90368),
+          backgroundColor: Color.fromRGBO(255, 234, 167, 1),
+          selectedItemColor: Color.fromRGBO(0, 206, 201, 0.5),  
           onTap: onItemTapped,
           items: [
             BottomNavigationBarItem(
@@ -78,21 +79,28 @@ class _NavigationState extends State<Navigation> {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/friends.png"),
-                size: iconSize,
+                new AssetImage("assets/images/post.png"),
+                size: iconSize+4,
               ),
               title: Text(""),
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/experiences.png"),
-                size: iconSize,
+                new AssetImage("assets/images/trophy.jpg"),
+                size: iconSize+4,
               ),
               title: Text(""),
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                new AssetImage("assets/images/settings.png"),
+                new AssetImage("assets/images/target.png"),
+                size: iconSize,
+              ),
+              title: Text(""),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.settings,
                 size: iconSize,
               ),
               title: Text(""),

@@ -3,10 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/editprofile.dart';
+import 'package:humanknit/friendspost.dart';
 import 'package:humanknit/friendsview.dart';
 import 'package:humanknit/makefriends.dart';
-import 'package:humanknit/stats.dart';
-
 import 'addpost.dart';
 
 class MainProfilePage extends StatefulWidget {
@@ -21,7 +20,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
   String profileName, profileDesc, profilePic;
   int numFriends;
   int numRequests;
-
+  int numPosts;
+  String _uid;
   Future<void> fetchData() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
@@ -30,9 +30,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
     DocumentReference profileDocument =
         await Firestore.instance.document("users/$uid/data/profileData");
     profileDocument.get().then((datasnapshot) {
-      print("data yes");
       if (datasnapshot.exists) {
-        print(datasnapshot.data['name'].toString());
         if (profileName == null || profileDesc == null || profilePic == null) {
           setState(() {
             if (datasnapshot.data['name'] != null) {
@@ -126,16 +124,22 @@ class _MainProfilePageState extends State<MainProfilePage> {
         Firestore.instance.document("users/$uid/data/postsData");
       }
     });
-    print(requestsHint);
+    QuerySnapshot postsDocs = await Firestore.instance.collection("users/$uid/data/postsData/posts").getDocuments();
+    List<DocumentSnapshot> posts = await postsDocs.documents;
+    setState(() {
+      numPosts = posts.length;
+      _uid = user.uid;
+    });
   }
-
+  bool first = true;
   @override
   Widget build(BuildContext context) {
-    fetchData();
-
+    if (first) {
+      fetchData();
+      first = false;
+    }
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print("returning");
     try {
       return Scaffold(
         body: Column(
@@ -151,20 +155,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
                     ),
                     tooltip: "Back",
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => StatsPage()),
-                    );
-                  },
-                  icon: Icon(
-                    Icons.assessment,
-                    color: Colors.white,
-                  ),
-                  tooltip: "Statistics",
                 ),
                 IconButton(
                   onPressed: () {
@@ -282,25 +272,31 @@ class _MainProfilePageState extends State<MainProfilePage> {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 75,
-                    width: 75,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "12",
-                          style: TextStyle(
-                            fontSize: 24,
+                  GestureDetector(
+                    onTap: () {
+                      print(_uid);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => FriendPostsPage(userUID: _uid,)));
+                    },
+                    child: Container(
+                      height: 75,
+                      width: 75,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            numPosts.toString(),
+                            style: TextStyle(
+                              fontSize: 24,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Posts",
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
+                          Text(
+                            "Posts",
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ],

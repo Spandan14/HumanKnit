@@ -22,7 +22,6 @@ class _PostAddState extends State<PostAdd> {
   var _postImage;
   String _uploadedFileURL = "";
   DateTime selectedDate = DateTime.now();
-  String _selectedType;
   bool imageVis = false;
   static final _postKey = GlobalKey<FormState>();
 
@@ -69,18 +68,15 @@ class _PostAddState extends State<PostAdd> {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     var uid = user.uid;
     var id = new DateTime.now().millisecondsSinceEpoch;
-    print(_selectedType);
     await Firestore.instance.document("users/$uid/data/postsData").setData({"exists": true}, merge: true);
     DocumentReference postDoc = Firestore.instance.document("users/$uid/data/postsData/posts/${id.toString()}");
     print(selectedDate);
     await postDoc.setData({
       "date": selectedDate.toString().substring(0, selectedDate.toString().indexOf(' ')),
-      "type": _selectedType,
       "caption": _caption.text,
       "pic": _uploadedFileURL,
       "location": _location.text,
       "likes": 0,
-      "verifies": 0,
     }, merge: true);
   }
 
@@ -121,36 +117,6 @@ class _PostAddState extends State<PostAdd> {
                             ),
                           )
                         ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 30/360 * width, right: 30/360 * width, top: 10/692 * height),
-                    child: Container(
-                      child: DropdownButtonFormField(
-                        validator: (_selectedType) {
-                          if (_selectedType == null) {
-                            return "Please select an event type";
-                          }
-                          return null;
-                        },
-                        hint: Text("Event Type"),
-                        value: _selectedType,
-                        items: <String>['Volunteering Event', 'Election', 'Community Event'].map((String value) {
-                          setState(() {
-                            _selectedType = value;
-                          });
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (_) {
-                        },
-                        decoration: InputDecoration(
-                          errorStyle: TextStyle(fontSize: 8),
-                        ),
-
                       ),
                     ),
                   ),

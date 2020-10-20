@@ -79,6 +79,12 @@ flutter:
     - family: BungeeInline
       fonts:
         - asset: fonts/Bungee-LowercaseCustomized.otf
+    - family: AdventPro
+      fonts:
+        - asset: fonts/AdventPro-Regular.ttf
+    - family: PatrickHand
+      fonts:
+        - asset: fonts/PatrickHand-Regular.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

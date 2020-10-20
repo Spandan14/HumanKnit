@@ -3,7 +3,6 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:xml_parser/xml_parser.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:universal_html/html.dart' as html;
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 
@@ -35,13 +34,20 @@ class SearchPageState extends State<SearchPage> {
   var closed = false;
   double screenHeight = 0;
   double screenWidth = 0;
-  var selected = [true, false];
+  var selected = [true];
   var searchString = "";
   Placemark location;
   var gotLocation = false;
   var advancedSearchPressed = false;
-  List<bool> advancedSearchValues;
+  var advancedSearchTFValues;
+  var searchLocationStr = "";
+  final eventfulAppKey = "R83whdM3ZPbzHzRf";
+  List<String> eventfulCategoryTitles;
+  List<String> eventfulCategoryIDs;
+  List<String> eventfulCategoryIDsSelected;
   List<Widget> advancedSearchOptions;
+  List<bool> eventfulCategoriesSelected;
+  List<bool> advancedSearchValues;
 
   @override
   void dispose() {
@@ -50,42 +56,61 @@ class SearchPageState extends State<SearchPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (type != EVENT_TYPE.VOTE) {
+      selected.add(false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
-    final toggle = ToggleButtons(
-      isSelected: selected,
-      onPressed: (int index) {
-        onTogglePressed(index);
-        setState(() {});
-      },
-      selectedColor: Color(0xffffffff),
-      fillColor: Color(0xfffcba03),
-      borderColor: Color(0xff000000),
-      selectedBorderColor: Color(0xff000000),
-      borderRadius: BorderRadius.all(
-        Radius.circular(1000),
-      ),
-      children: [
-        Padding(
-          padding: EdgeInsets.all(screenWidth / 48),
-          child: Text("Near You",
-              style: TextStyle(
-                fontSize: 36 / 896 * screenHeight,
-              )),
-        ),
-        Padding(
-          padding: EdgeInsets.all(screenWidth / 48),
-          child: Text(
-            "Search",
-            style: TextStyle(
-              fontSize: 36 / 896 * screenHeight,
-            ),
-          ),
-        ),
-      ],
+    final nearYouTab = Padding(
+      padding: EdgeInsets.all(screenWidth / 48),
+      child: Text("Near You",
+          style: TextStyle(
+            fontSize: 36 / 896 * screenHeight,
+          )),
     );
+
+    final toggle = (type == EVENT_TYPE.VOTE)
+        ? Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xff000000)),
+              borderRadius: BorderRadius.all(Radius.circular(1000)),
+              color: Color(0xfffcba03),
+            ),
+            child: nearYouTab,
+          )
+        : ToggleButtons(
+            isSelected: selected,
+            onPressed: (int index) {
+              onTogglePressed(index);
+              setState(() {});
+            },
+            selectedColor: Color(0xffffffff),
+            fillColor: Color(0xfffcba03),
+            borderColor: Color(0xff000000),
+            selectedBorderColor: Color(0xff000000),
+            borderRadius: BorderRadius.all(
+              Radius.circular(1000),
+            ),
+            children: [
+              nearYouTab,
+              Padding(
+                padding: EdgeInsets.all(screenWidth / 48),
+                child: Text(
+                  "Search",
+                  style: TextStyle(
+                    fontSize: 36 / 896 * screenHeight,
+                  ),
+                ),
+              ),
+            ],
+          );
 
     final backButton = RaisedButton(
       color: Color(0xfffcba03),
@@ -175,7 +200,7 @@ class SearchPageState extends State<SearchPage> {
       advancedSearchOptions = null;
     }
 
-    selected[1] ? searchMethod(true) : searchMethod(false);
+    !selected[0] ? searchMethod(true) : searchMethod(false);
 
     return Scaffold(
       backgroundColor: Color(0xff6c7bff),
@@ -206,8 +231,10 @@ class SearchPageState extends State<SearchPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 selected[0] ? SizedBox(height: 0) : Flexible(child: searchBar),
-                selected[0] ? SizedBox(height: 0) : Flexible(child: advancedSearch),
-                (selected[1] && advancedSearchPressed)
+                selected[0]
+                    ? SizedBox(height: 0)
+                    : Flexible(child: advancedSearch),
+                (!selected[0] && advancedSearchPressed)
                     ? Padding(
                         padding: EdgeInsets.only(
                           left: screenWidth / 6,
@@ -264,6 +291,7 @@ class SearchPageState extends State<SearchPage> {
         title = "Volunteering Events";
         searchMethod = getVolunteerEventsList;
         advancedSearchValues = [true, false];
+        advancedSearchTFValues = ["", ""];
         break;
       case EVENT_TYPE.VOTE:
         title = "Voting Events";
@@ -272,6 +300,11 @@ class SearchPageState extends State<SearchPage> {
       case EVENT_TYPE.COMMUNITY:
         title = "Community Events";
         searchMethod = getCommunityEventsList;
+        advancedSearchValues = [false, false];
+        advancedSearchTFValues = [""];
+        if (eventfulCategoryTitles == null || eventfulCategoryIDs == null) {
+          getCommunityEventCategories();
+        }
         break;
     }
   }
@@ -291,6 +324,8 @@ class SearchPageState extends State<SearchPage> {
             activeColor: Color(0xfffcba03),
             onChanged: (bool value) {
               setState(() {
+                children = null;
+                closed = false;
                 advancedSearchValues[0] = value;
                 advancedSearchValues[1] = !value;
               });
@@ -309,6 +344,8 @@ class SearchPageState extends State<SearchPage> {
             value: advancedSearchValues[1],
             activeColor: Color(0xfffcba03),
             onChanged: (bool value) {
+              children = null;
+              closed = false;
               setState(() {
                 advancedSearchValues[1] = value;
                 advancedSearchValues[0] = !value;
@@ -321,6 +358,16 @@ class SearchPageState extends State<SearchPage> {
                   children: [
                     Flexible(
                       child: TextField(
+                        onEditingComplete: () {
+                          FocusScope.of(context).unfocus();
+                          setSearchStr();
+                          children = null;
+                          closed = false;
+                          setState(() {});
+                        },
+                        onChanged: (value) {
+                          advancedSearchTFValues[0] = value;
+                        },
                         decoration: InputDecoration(
                           fillColor: Color(0xffffffff),
                           filled: true,
@@ -345,6 +392,16 @@ class SearchPageState extends State<SearchPage> {
                     VerticalDivider(),
                     Flexible(
                       child: TextField(
+                        onEditingComplete: () {
+                          FocusScope.of(context).unfocus();
+                          setSearchStr();
+                          children = null;
+                          closed = false;
+                          setState(() {});
+                        },
+                        onChanged: (value) {
+                          advancedSearchTFValues[1] = value;
+                        },
                         decoration: InputDecoration(
                           fillColor: Color(0xffffffff),
                           filled: true,
@@ -374,9 +431,190 @@ class SearchPageState extends State<SearchPage> {
       case EVENT_TYPE.VOTE:
         break;
       case EVENT_TYPE.COMMUNITY:
+        advancedSearchOptions = [
+          CheckboxListTile(
+            title: Text(
+              "Location",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[0],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) {
+              setState(() {
+                advancedSearchValues[0] = value;
+              });
+            },
+          ),
+          advancedSearchValues[0]
+              ? TextField(
+                  onChanged: (value) {
+                    advancedSearchTFValues[0] = value;
+                  },
+                  onEditingComplete: () {
+                    FocusScope.of(context).unfocus();
+                    children = null;
+                    closed = false;
+                    setState(() {});
+                  },
+                  decoration: InputDecoration(
+                    fillColor: Color(0xffffffff),
+                    filled: true,
+                    hintText: "Zip Code",
+                    hintStyle: TextStyle(
+                      fontSize: 18 / 896 * screenHeight,
+                      color: Color(0xffb1b1b1),
+                    ),
+                    prefixIcon: Transform.scale(
+                      scale: 0.2,
+                      child: ImageIcon(
+                        AssetImage("assets/images/location.png"),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderSide: BorderSide(color: Color(0xffb1b1b1)),
+                    ),
+                  ),
+                )
+              : SizedBox(height: 0),
+          Divider(
+            color: Color(0xffffffff),
+          ),
+          CheckboxListTile(
+            title: Text(
+              "Category",
+              style: TextStyle(
+                fontSize: 36 / 896 * screenHeight,
+              ),
+            ),
+            value: advancedSearchValues[1],
+            activeColor: Color(0xfffcba03),
+            onChanged: (bool value) async {
+              presentCategoryDialog();
+            },
+          ),
+        ];
         break;
     }
     setState(() {});
+  }
+
+  void setSearchStr() {
+    searchLocationStr = advancedSearchTFValues[0].isEmpty
+        ? advancedSearchTFValues[1]
+        : "${advancedSearchTFValues[0]}, ${advancedSearchTFValues[1]}";
+  }
+
+  void getCommunityEventCategories() async {
+    final url =
+        "http://api.eventful.com/rest/categories/list?app_key=$eventfulAppKey";
+
+    final response = await http.get(url);
+
+    final xml = XmlDocument.fromString(response.body);
+    final titleElements = xml.getElementsWhere(name: 'name');
+    final idElements = xml.getElementsWhere(name: 'id');
+
+    eventfulCategoryTitles = List<String>();
+    eventfulCategoryIDs = List<String>();
+    eventfulCategoriesSelected = List<bool>();
+
+    titleElements.forEach((node) => eventfulCategoryTitles.add(node.text));
+    idElements.forEach((node) => eventfulCategoryIDs.add(node.text));
+    for (int i = 0; i < eventfulCategoryTitles.length; i++) {
+      eventfulCategoriesSelected.add(false);
+    }
+  }
+
+  void presentCategoryDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Theme(
+          data: ThemeData(fontFamily: "BungeeInline"),
+          child: AlertDialog(
+            backgroundColor: Color(0xfffcba03),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Text(
+              'Choose Event Categories',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xff000000),
+              ),
+            ),
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Container(
+                  width: double.maxFinite,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: eventfulCategoryTitles.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return CheckboxListTile(
+                              title: Text(
+                                eventfulCategoryTitles[index],
+                                style: TextStyle(
+                                  fontSize: 36 / 896 * screenHeight,
+                                ),
+                              ),
+                              value: eventfulCategoriesSelected[index],
+                              activeColor: Color(0xfffcba03),
+                              onChanged: (bool value) {
+                                setState(() {
+                                  eventfulCategoriesSelected[index] = value;
+                                });
+                              },
+                            );
+                          },
+                          shrinkWrap: true,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FlatButton(
+                            child: Text(
+                              'Save',
+                              style: TextStyle(color: Color(0xff6c7bff)),
+                            ),
+                            onPressed: () {
+                              advancedSearchValues[1] =
+                                  eventfulCategoriesSelected.contains(true);
+                              children = null;
+                              closed = false;
+                              setEventfulCategoryIDSelected();
+                              Navigator.of(context).pop();
+                              this.setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void setEventfulCategoryIDSelected() {
+    eventfulCategoryIDsSelected = List<String>();
+    for (int i = 0; i < eventfulCategoriesSelected.length; i++) {
+      if (eventfulCategoriesSelected[i]) {
+        eventfulCategoryIDsSelected.add(eventfulCategoryIDs[i]);
+      }
+    }
   }
 
   void getVotingEventsList(bool search) async {
@@ -411,18 +649,33 @@ class SearchPageState extends State<SearchPage> {
       return;
     }
 
-    final str = !search ? "" : searchString;
-    final appKey = "R83whdM3ZPbzHzRf";
     var url = 'http://api.eventful.com/rest/events/search?app_key=' +
-        appKey +
-        '&q=$str&date=Future';
+        eventfulAppKey +
+        '&date=Future';
     if (!search) {
       if (!gotLocation) {
         location = await getUserLocation();
         gotLocation = true;
       }
-      url += "?l=" + Uri.encodeComponent(location.postalCode.toString());
+      url += "&l=" + Uri.encodeComponent(location.postalCode.toString());
+    } else {
+      url += "&q=$searchString";
+      if (advancedSearchPressed) {
+        if (advancedSearchValues[0]) {
+          url += "&l=" + advancedSearchTFValues[0];
+        }
+        if (advancedSearchValues[1]) {
+          url += "&category=";
+          for (int i = 0; i < eventfulCategoryIDsSelected.length; i++) {
+            url += eventfulCategoryIDsSelected[i];
+            if (i < eventfulCategoryIDsSelected.length - 1) {
+              url += ",";
+            }
+          }
+        }
+      }
     }
+
     final response = await http.get(url);
 
     final xml = XmlDocument.fromString(response.body);
@@ -468,7 +721,16 @@ class SearchPageState extends State<SearchPage> {
 
     String url = "https://www.volunteermatch.org/search/";
     if (search) {
-      url += "?k=" + searchString + "&v=true";
+      url += "?k=" + searchString;
+      if (advancedSearchPressed) {
+        if (advancedSearchValues[0]) {
+          url += "&v=true";
+        } else {
+          url += "&l=" + Uri.encodeComponent(searchLocationStr);
+        }
+      } else {
+        url += "&v=true";
+      }
     } else {
       if (!gotLocation) {
         location = await getUserLocation();

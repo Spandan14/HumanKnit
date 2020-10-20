@@ -5,12 +5,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/friendprofile.dart';
-class PostsPage extends StatefulWidget {
+class FriendPostsPage extends StatefulWidget {
+  final String userUID;
+
+  FriendPostsPage({Key key, @required this.userUID}) : super(key: key);
+
+
   @override
-  _PostsPageState createState() => _PostsPageState();
+  _FriendPostsPageState createState() => _FriendPostsPageState();
 }
 
-class _PostsPageState extends State<PostsPage> {
+class _FriendPostsPageState extends State<FriendPostsPage> {
 
   static ScrollController _scrollController = new ScrollController();
 
@@ -27,8 +32,8 @@ class _PostsPageState extends State<PostsPage> {
     print("data");
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     String uid = user.uid;
-    QuerySnapshot friends = await Firestore.instance.collection("users/$uid/data/friendsData/friends").getDocuments();
-    List<DocumentSnapshot> friendDocs = await friends.documents;
+    QuerySnapshot posts = await Firestore.instance.collection("users/${widget.userUID}/data/postsData/posts").getDocuments();
+    List<DocumentSnapshot> postsDocs = await posts.documents;
     List<String> postCaptions = List<String>();
     List<String> postDates = List<String>();
     List<String> postLocations = List<String>();
@@ -38,38 +43,33 @@ class _PostsPageState extends State<PostsPage> {
     List<String> postAuthors = List<String>();
     List<String> postAuthorUIDS = List<String>();
     List<int> postLikes = List<int>();
-    await friendDocs.forEach((datasnapshot) async {
-      var currentUID = datasnapshot.data["friend"];
-      print(currentUID);
-      DocumentReference profile = await Firestore.instance.document("users/$currentUID");
+    await print(posts);
+    postsDocs.forEach((postsnapshot) async {
+      DocumentReference profile = await Firestore.instance.document("users/${widget.userUID}");
       DocumentSnapshot profilesnapshot;
       await profile.get().then((snapshot) {profilesnapshot = snapshot;});
-      QuerySnapshot posts = await Firestore.instance.collection("users/$currentUID/data/postsData/posts").getDocuments();
-      List<DocumentSnapshot> postDocs = await posts.documents;
-      await postDocs.forEach((postsnapshot) async {
-        await postCaptions.add(postsnapshot.data["caption"]);
-        await postDates.add(postsnapshot.data["date"].toString());
-        await postLocations.add(postsnapshot.data["location"]);
-        await postPics.add(postsnapshot.data["pic"]);
-        await postTypes.add(postsnapshot.data["type"]);
-        await postUIDS.add(postsnapshot.documentID);
-        await postAuthors.add(profilesnapshot.data["name"]);
-        await postAuthorUIDS.add(currentUID);
-        await postLikes.add(postsnapshot.data["likes"]);
-        setState(() {
-          print("sett");
-          _postCaptions = new List.from(postCaptions.reversed);
-          _postDates = new List.from(postDates.reversed);
-          _postLocations = new List.from(postLocations.reversed);
-          _postPics = new List.from(postPics.reversed);
-          _postTypes = new List.from(postTypes.reversed);
-          _postUIDS = new List.from(postUIDS.reversed);
-          _postAuthors = new List.from(postAuthors.reversed);
-          _postAuthorUIDS = new List.from(postAuthorUIDS.reversed);
-          _postLikes = new List.from(postLikes.reversed);
-          first = false;
-          print(postUIDS);
-        });
+      await postCaptions.add(postsnapshot.data["caption"]);
+      await postDates.add(postsnapshot.data["date"].toString());
+      await postLocations.add(postsnapshot.data["location"]);
+      await postPics.add(postsnapshot.data["pic"]);
+      await postTypes.add(postsnapshot.data["type"]);
+      await postUIDS.add(postsnapshot.documentID);
+      await postAuthors.add(profilesnapshot.data["name"]);
+      await postAuthorUIDS.add(widget.userUID);
+      await postLikes.add(postsnapshot.data["likes"]);
+      setState(() {
+        print("sett");
+        _postCaptions = new List.from(postCaptions.reversed);
+        _postDates = new List.from(postDates.reversed);
+        _postLocations = new List.from(postLocations.reversed);
+        _postPics = new List.from(postPics.reversed);
+        _postTypes = new List.from(postTypes.reversed);
+        _postUIDS = new List.from(postUIDS.reversed);
+        _postAuthors = new List.from(postAuthors.reversed);
+        _postAuthorUIDS = new List.from(postAuthorUIDS.reversed);
+        _postLikes = new List.from(postLikes.reversed);
+        first = false;
+        print(postUIDS);
       });
     });
   }
@@ -254,8 +254,8 @@ class _PostsPageState extends State<PostsPage> {
                             author,
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20
+                                color: Colors.white,
+                                fontSize: 20
                             ),
                           ),
                         ),
@@ -269,7 +269,7 @@ class _PostsPageState extends State<PostsPage> {
                             "At " + location + "\nOn " + date,
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              color: Colors.white,
+                                color: Colors.white,
                                 fontSize: 16
                             ),
                           ),
@@ -307,26 +307,26 @@ class _PostsPageState extends State<PostsPage> {
                           Container(
                             width: 250/360 * width,
                             child: Text(
-                                caption,
+                              caption,
                               style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white
+                                  fontSize: 16,
+                                  color: Colors.white
                               ),
                             ),
                           ),
 
                           Container(
                             child: Text(
-                                likes.toString(),
+                              likes.toString(),
                               style: TextStyle(
-                                color: Colors.white
+                                  color: Colors.white
                               ),
                             ),
                           ),
                           IconButton(
                             color: Colors.black,
                             icon: Icon(
-                                Icons.favorite_border,
+                              Icons.favorite_border,
                               color: Colors.redAccent,
                             ),
                             onPressed: () {doLike(position);},
@@ -345,52 +345,75 @@ class _PostsPageState extends State<PostsPage> {
       ),
     );
   }
+
   bool first = true;
   @override
   Widget build(BuildContext context) {
     if (first) {
       fetchPostsData();
+      setState(() {});
+      first = false;
     }
-    print('1');
     if (_postUIDS.length == 0) {
-      return Container(
+      return Scaffold(
+        body: Column(
+          children: <Widget>[
+            AppBar(
+              backgroundColor: Colors.black,
+              actions: <Widget>[
+              ],
+            ),
+            Container(
+              color: Color(0xffc1baff),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 600,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "No posts in your feed",
+                        style: TextStyle(
+                            fontFamily: "AdventPro",
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    )
+                  ],
+                )
+            ),
+          ],
+        ),
+      );
+    }
+    print(widget.userUID);
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: Container(
+        color: Color(0xffc1baff),
         child: Column(
           children: <Widget>[
-            Container(
-              height: 600,
-              alignment: Alignment.center,
-              child: Text(
-                "No posts in your feed",
-                style: TextStyle(
-                  fontFamily: "AdventPro",
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
+            AppBar(
+              backgroundColor: Colors.black,
+              actions: <Widget>[
+              ],
+            ),
+            SingleChildScrollView(
+              child: Container(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  controller: _scrollController,
+                  shrinkWrap: true,
+                  itemCount: _postUIDS.length,
+                  itemBuilder: (BuildContext context, index) {
+                    return(getPostCard(index));
+                  },
                 ),
               ),
             )
           ],
-        )
-      );
-    }
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    return Container(
-      child: Column(
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Container(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                controller: _scrollController,
-                shrinkWrap: true,
-                itemCount: _postUIDS.length,
-                itemBuilder: (BuildContext context, index) {
-                  return(getPostCard(index));
-                },
-              ),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }

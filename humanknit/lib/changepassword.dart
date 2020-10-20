@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:humanknit/login.dart';
+import 'package:humanknit/settings.dart';
+import 'package:humanknit/splash.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ChangePasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -25,7 +27,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     right: 0.15 * width,
                     top: 20,
                     bottom: 20)),
-            ForgotPasswordForm(),
+            ChangePasswordForm(),
           ],
         ),
       ),
@@ -33,15 +35,15 @@ class ForgotPasswordScreen extends StatelessWidget {
   }
 }
 
-class ForgotPasswordForm extends StatefulWidget {
+class ChangePasswordForm extends StatefulWidget {
   @override
-  _ForgotPasswordFormState createState() => _ForgotPasswordFormState();
+  _ChangePasswordFormState createState() => _ChangePasswordFormState();
 }
 
-class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
+class _ChangePasswordFormState extends State<ChangePasswordForm> {
   final _formKey = GlobalKey<FormState>();
 
-  void handleForgotError(var err) {
+  void handleChangeError(var err) {
     print(err.code);
     String errorText;
     switch (err.code) {
@@ -158,30 +160,30 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                                   width: 0.5,
                                 ))),
                       ))),
-            Container(
-                color: Colors.white,
-                child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 0.20 * width, right: 0.20 * width, bottom: 30, top: 20),
-                    child: Container(
-                        width: 320,
-                        height: 40,
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100),
-                              side: BorderSide(color: Colors.grey)),
-                          color: Color.fromRGBO(0, 206, 201, 1),
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              FirebaseAuth.instance.sendPasswordResetEmail(email: _email.text).then((result) =>
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())
-                              )).catchError((err) => handleForgotError(err));
+              Container(
+                  color: Colors.white,
+                  child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 0.20 * width, right: 0.20 * width, bottom: 30, top: 20),
+                      child: Container(
+                          width: 320,
+                          height: 40,
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
+                                side: BorderSide(color: Colors.grey)),
+                            color: Color.fromRGBO(0, 206, 201, 1),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                FirebaseAuth.instance.sendPasswordResetEmail(email: _email.text).then((result) =>
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())
+                                    )).catchError((err) => handleChangeError(err));
 
-                            }
-                          },
-                          child: Text('Reset password',
-                              style: TextStyle(color: Colors.white)),
-                        )))),
+                              }
+                            },
+                            child: Text('Reset password',
+                                style: TextStyle(color: Colors.white)),
+                          )))),
               Container(
                   color: Colors.white,
                   width: width,
@@ -196,7 +198,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                         onPressed: () {
 
                           Navigator.of(context).pop();
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
                         },
                         child: Text('Back',
                             style:
@@ -205,7 +207,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                       )
                   )
               )
-              ]
+            ]
             )
         )
     );
